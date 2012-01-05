@@ -1,4 +1,4 @@
-package com.awesome.srpg.strategy;
+package com.awesome.srpg.logic;
 
 public enum StageCell {
 	Normal,

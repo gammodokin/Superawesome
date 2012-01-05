@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.awesome.srpg.logic.MapSearch;
+import com.awesome.srpg.logic.UnitCorner;
+import com.awesome.srpg.logic.UnitType;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.MapSearch;
-import com.awesome.srpg.strategy.UnitCorner;
-import com.awesome.srpg.strategy.UnitType;
 
 public enum Target implements Serializable {
 	CLOSEST {

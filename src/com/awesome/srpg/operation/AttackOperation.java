@@ -1,6 +1,6 @@
 package com.awesome.srpg.operation;
 
-import com.awesome.srpg.strategy.Skill;
+import com.awesome.srpg.logic.Skill;
 
 public interface AttackOperation extends Operation{
 

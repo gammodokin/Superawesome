@@ -3,10 +3,10 @@ package com.awesome.srpg.operation;
 import java.util.List;
 
 import com.awesome.srpg.BattleRecord;
+import com.awesome.srpg.logic.Coord;
+import com.awesome.srpg.logic.Skill;
+import com.awesome.srpg.logic.Status;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Coord;
-import com.awesome.srpg.strategy.Skill;
-import com.awesome.srpg.strategy.Status;
 
 public class SimpleAttackOperator implements UnitOperator {
 

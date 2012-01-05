@@ -8,13 +8,13 @@ import com.awesome.game.base.Screen;
 import com.awesome.script.StaticScript;
 import com.awesome.script.macro.LearnMacroOp;
 import com.awesome.script.macro.UnitIDLM;
+import com.awesome.srpg.logic.StageCell;
+import com.awesome.srpg.logic.UnitManager;
+import com.awesome.srpg.logic.UnitStatus;
 import com.awesome.srpg.object.Stage;
 import com.awesome.srpg.object.Unit;
 import com.awesome.srpg.object.UnitCursor;
 import com.awesome.srpg.operation.ScriptOperator;
-import com.awesome.srpg.strategy.StageCell;
-import com.awesome.srpg.strategy.UnitManager;
-import com.awesome.srpg.strategy.UnitStatus;
 import com.badlogic.gdx.Application;
 
 public class BattleScreen implements Screen {
@@ -71,8 +71,8 @@ public class BattleScreen implements Screen {
 	}
 
 	@Override
-	public void update(Application app) {
-		float delta = app.getGraphics().getDeltaTime();
+	public void update(float delta) {
+//		float delta = app.getGraphics().getDeltaTime();
 		List<Actor> actorListClone = new LinkedList<Actor>(actorList);
 		for(Actor act : actorListClone)
 			act.update(delta);

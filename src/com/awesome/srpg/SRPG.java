@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Renderer;
 import com.awesome.game.base.Screen;
 import com.awesome.script.dynamic.CDUtils;
@@ -18,6 +19,7 @@ import com.awesome.script.macro.LearningMacroAction;
 import com.awesome.script.macro.UnitIDLM;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 
 // TODO 中盤マクロで魔力強化スキルが採用されてる
 // TODO 移動可能領域表示、同時にバグも見つかるはず
@@ -33,14 +35,19 @@ import com.badlogic.gdx.Gdx;
 
 public class SRPG implements ApplicationListener {
 
-	public static final boolean VIEW = false;
+	public static final boolean VIEW = true;
 	public static final boolean CONSOLE_VIEW = false;
-	private final int BATTLE = LearningMacroAction.BATTLE_COUNT;
+	final static int BATTLE = LearningMacroAction.BATTLE_COUNT;
 	private static final boolean DONE_NOTICE = true;
+
+	static final int FPS = 30;
 
 	private final int Wmax = DynamicScripting.maxweight;
 
 	private static Renderer ren;
+
+	// DOING Multi Thread にする
+	private Thread logicThread;
 
 	public static Renderer getRenderer() {
 		return ren;
@@ -52,11 +59,12 @@ public class SRPG implements ApplicationListener {
 
 	private final String ENEMY = "weak";
 
-	private int battleCount;
+//	private int battleCount;
 
 	@Override
 	public void create() {
 		ren = Renderer.getInstance(Gdx.app.getGraphics().getGL10());
+
 
 		for(UnitID uid : UnitID.values())
 			uid.load();
@@ -64,7 +72,9 @@ public class SRPG implements ApplicationListener {
 		for(UnitIDLM uid : UnitIDLM.values())
 			uid.load();
 
-		screen = new BattleScreen();
+		logicThread = new Thread(new GameLogic());
+		logicThread.start();
+//		screen = new BattleScreen();
 	}
 
 	@Override
@@ -80,21 +90,21 @@ public class SRPG implements ApplicationListener {
 
 	@Override
 	public void render() {
-		screen.update(Gdx.app);
+//		screen.update(Gdx.app);
 		if(VIEW)
 			ren.render(Gdx.gl10);
-
-		Screen next = screen.nextScreen();
-		if(next != screen) {
-			System.out.println("battle : " + battleCount);
-			battleCount++;
-
-//			RulebaseViewer.viewRulebases(false);
-
-			if(battleCount == BATTLE)
-				exit();
-		}
-		screen = next;
+//
+//		Screen next = screen.nextScreen();
+//		if(next != screen) {
+//			System.out.println("battle : " + battleCount);
+//			battleCount++;
+//
+////			RulebaseViewer.viewRulebases(false);
+//
+//			if(battleCount == BATTLE)
+//				exit();
+//		}
+//		screen = next;
 	}
 
 	@Override
@@ -108,7 +118,7 @@ public class SRPG implements ApplicationListener {
 
 	}
 
-	private void exit() {
+	static void exit() {
 		for(UnitID uid : UnitID.values())
 			uid.saveRulebase();
 
@@ -127,24 +137,62 @@ public class SRPG implements ApplicationListener {
 //		pw.println(RulebaseViewer.rulebasesToString(false));
 		pw.close();
 
-//		FileHandle handle = Gdx.files.internal("res/log/winLog-weak-" + BATTLE + ".txt");
-//		OutputStream os = handle.write(false);
-//		try {
-//			os.write(learnerWinLog.getBytes());
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				os.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
 		if(DONE_NOTICE)
 			CDUtils.open("G:\\");
 
 		System.exit(0);
+	}
+
+}
+
+class GameLogic implements Runnable {
+
+	private final float DELTA_MIN;
+
+	Screen screen;
+
+	public GameLogic() {
+		screen = new BattleScreen();
+
+		DELTA_MIN = 1.0f/30;
+	}
+
+	private int battleCount;
+
+	@Override
+	public void run() {
+
+		float delta = 0;
+
+		while(true) {
+			long startTime = System.currentTimeMillis();
+
+			screen.update(delta / 1000);
+
+			Screen next = screen.nextScreen();
+			if(next != screen) {
+				System.out.println("battle : " + battleCount);
+				battleCount++;
+
+				if(battleCount == SRPG.BATTLE)
+					SRPG.exit();
+			}
+			screen = next;
+
+			delta = System.currentTimeMillis() - startTime;
+
+			if(delta < DELTA_MIN) {
+				try {
+					Thread.sleep((long) (DELTA_MIN - delta));
+				} catch (InterruptedException e) {
+					// TODO 自動生成された catch ブロック
+					e.printStackTrace();
+				}
+
+				delta = DELTA_MIN;
+			}
+		}
+
 	}
 
 }

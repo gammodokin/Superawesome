@@ -5,8 +5,8 @@ import com.awesome.game.base.Animation;
 import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Screen;
 import com.awesome.srpg.SRPG;
+import com.awesome.srpg.logic.Damage;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Damage;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -109,8 +109,9 @@ public class MagicEffect extends Actor implements Animation {
 
 	@Override
 	public void render(GL10 gl) {
-		for(AnimDecal t : trails)
-			t.render();
+		if(trails != null)
+			for(AnimDecal t : trails)
+				t.render();
 	}
 
 	private void finish() {

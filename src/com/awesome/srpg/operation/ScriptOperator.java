@@ -5,11 +5,11 @@ import java.util.List;
 import com.awesome.script.ActionScript;
 import com.awesome.script.Line;
 import com.awesome.srpg.BattleRecord;
+import com.awesome.srpg.logic.Coord;
+import com.awesome.srpg.logic.MapSearch;
+import com.awesome.srpg.logic.Skill;
+import com.awesome.srpg.logic.Status;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Coord;
-import com.awesome.srpg.strategy.MapSearch;
-import com.awesome.srpg.strategy.Skill;
-import com.awesome.srpg.strategy.Status;
 
 public class ScriptOperator implements UnitOperator {
 

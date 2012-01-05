@@ -4,7 +4,7 @@ import com.awesome.game.base.Actor;
 import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Screen;
 import com.awesome.srpg.SRPG;
-import com.awesome.srpg.strategy.Status;
+import com.awesome.srpg.logic.Status;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;

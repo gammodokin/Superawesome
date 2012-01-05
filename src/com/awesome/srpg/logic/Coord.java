@@ -1,4 +1,4 @@
-package com.awesome.srpg.strategy;
+package com.awesome.srpg.logic;
 
 public class Coord<E extends Number> {
 	public E x, y;

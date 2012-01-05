@@ -7,8 +7,8 @@ import java.util.Map;
 
 import com.awesome.script.dynamic.Agent;
 import com.awesome.script.dynamic.Team;
+import com.awesome.srpg.logic.UnitCorner;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.UnitCorner;
 
 public class BattleRecord {
 

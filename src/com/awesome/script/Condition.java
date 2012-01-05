@@ -2,8 +2,8 @@ package com.awesome.script;
 
 import java.io.Serializable;
 
-import com.awesome.srpg.strategy.Status;
-import com.awesome.srpg.strategy.UnusualStatus;
+import com.awesome.srpg.logic.Status;
+import com.awesome.srpg.logic.UnusualStatus;
 
 public abstract class Condition implements Serializable {
 	public static class Always extends Condition{

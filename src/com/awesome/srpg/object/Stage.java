@@ -2,8 +2,8 @@ package com.awesome.srpg.object;
 
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Screen;
-import com.awesome.srpg.strategy.StageCell;
-import com.awesome.srpg.strategy.UnitManager;
+import com.awesome.srpg.logic.StageCell;
+import com.awesome.srpg.logic.UnitManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Mesh;

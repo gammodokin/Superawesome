@@ -2,8 +2,8 @@ package com.awesome.srpg.effect;
 
 import com.awesome.game.base.Animation;
 import com.awesome.game.base.Screen;
+import com.awesome.srpg.logic.Damage;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Damage;
 import com.badlogic.gdx.math.Vector3;
 
 public enum SkillEffect {

@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.awesome.srpg.logic.Skill;
+import com.awesome.srpg.logic.UnusualStatus;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Skill;
-import com.awesome.srpg.strategy.UnusualStatus;
 
 public class ConfigedLine implements Line {
 

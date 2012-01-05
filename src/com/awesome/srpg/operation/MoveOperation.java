@@ -1,6 +1,6 @@
 package com.awesome.srpg.operation;
 
-import com.awesome.srpg.strategy.Coord;
+import com.awesome.srpg.logic.Coord;
 
 public interface MoveOperation extends Operation{
 

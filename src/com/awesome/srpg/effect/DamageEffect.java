@@ -4,8 +4,8 @@ import com.awesome.game.base.Actor;
 import com.awesome.game.base.Animation;
 import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Screen;
+import com.awesome.srpg.logic.Damage;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Damage;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -99,7 +99,8 @@ public class DamageEffect extends Actor implements Animation {
 
 	@Override
 	public void render(GL10 gl) {
-		anim.render();
+		if(anim != null)
+			anim.render();
 	}
 
 	private void finish() {

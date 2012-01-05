@@ -2,9 +2,9 @@ package com.awesome.script;
 
 import java.util.List;
 
+import com.awesome.srpg.logic.MapSearch;
+import com.awesome.srpg.logic.Skill;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.MapSearch;
-import com.awesome.srpg.strategy.Skill;
 
 public class SimpleAS implements ActionScript {
 

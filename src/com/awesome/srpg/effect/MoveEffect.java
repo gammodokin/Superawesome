@@ -3,9 +3,9 @@ package com.awesome.srpg.effect;
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Animation;
 import com.awesome.game.base.Screen;
+import com.awesome.srpg.logic.Coord;
 import com.awesome.srpg.object.Stage;
 import com.awesome.srpg.object.Unit;
-import com.awesome.srpg.strategy.Coord;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.math.Vector3;
 

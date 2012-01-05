@@ -20,7 +20,7 @@ public class UnitCursor extends Actor {
 
 	private Unit unit;
 //	private float rotation = 0;
-	private final float ROTATE_SPEED = 30;
+	private final float ROTATE_SPEED = 300;
 
 	private Texture tex;
 	private Decal decal;
@@ -42,13 +42,16 @@ public class UnitCursor extends Actor {
 	public void update(float delta) {
 //		rotation += ROTATE_SPEED;
 //		rotation %= 180;
+		if(unit == null)
+			return;
+
+		Vector3 rc = unit.getRealCoord();
+		decal.setPosition(rc.x, rc.y + STAGE_SPAN * 1.7f, rc.z);
+		decal.rotateY(ROTATE_SPEED * delta);
 	}
 
 	@Override
 	public void render(GL10 gl) {
-		Vector3 rc = unit.getRealCoord();
-		decal.setPosition(rc.x, rc.y + STAGE_SPAN * 1.7f, rc.z);
-		decal.rotateY(ROTATE_SPEED);
 //		RenderUtil.setupBillboard(decal);
 	}
 

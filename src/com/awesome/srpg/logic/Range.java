@@ -1,4 +1,4 @@
-package com.awesome.srpg.strategy;
+package com.awesome.srpg.logic;
 
 public class Range {
 	static final Range ZERO = new Range(RangeType.ARCH, 0, 0, 0, 0);

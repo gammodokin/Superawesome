@@ -1,4 +1,4 @@
-package com.awesome.srpg.strategy;
+package com.awesome.srpg.logic;
 
 import java.util.HashMap;
 import java.util.Iterator;

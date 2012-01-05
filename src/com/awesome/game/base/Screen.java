@@ -26,7 +26,7 @@ public interface Screen {
 	 *
 	 * @param app the Application
 	 */
-	public void update (Application app);
+	public void update (float delta);//(Application app);
 
 	public void addActor(Actor act);
 
