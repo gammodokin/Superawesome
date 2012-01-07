@@ -5,7 +5,6 @@ import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Screen;
 import com.awesome.srpg.SRPG;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -20,7 +19,7 @@ public class UnitCursor extends Actor {
 
 	private Unit unit;
 //	private float rotation = 0;
-	private final float ROTATE_SPEED = 300;
+	private final float ROTATE_SPEED = 360;
 
 	private Texture tex;
 	private Decal decal;

@@ -75,11 +75,12 @@ public class BattleScreen implements Screen {
 //		float delta = app.getGraphics().getDeltaTime();
 		List<Actor> actorListClone = new LinkedList<Actor>(actorList);
 		for(Actor act : actorListClone)
-			act.update(delta);
+			if(act != null)	// ”ñ“¯Šú‚ÌŠÖŒW
+				act.update(delta);
 
 		manager.scanStandbyUnit(delta);
-		cursor.setUnit(manager.getCurrentUnit());
 
+		cursor.setUnit(manager.getCurrentUnit());
 	}
 
 	@Override

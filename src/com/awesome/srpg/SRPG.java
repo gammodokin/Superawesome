@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.Texture;
 // TODO 人間が操作
 
 // TODO 一時停止機能
+// DOING マルチスレッド、エフェクトHPMPバーの描画ができてない
 
 // TODO 索敵
 // TODO 複雑なミッションルール
@@ -46,7 +47,6 @@ public class SRPG implements ApplicationListener {
 
 	private static Renderer ren;
 
-	// DOING Multi Thread にする
 	private Thread logicThread;
 
 	public static Renderer getRenderer() {
@@ -64,7 +64,6 @@ public class SRPG implements ApplicationListener {
 	@Override
 	public void create() {
 		ren = Renderer.getInstance(Gdx.app.getGraphics().getGL10());
-
 
 		for(UnitID uid : UnitID.values())
 			uid.load();
@@ -149,12 +148,12 @@ class GameLogic implements Runnable {
 
 	private final float DELTA_MIN;
 
-	Screen screen;
+	private Screen screen;
 
 	public GameLogic() {
 		screen = new BattleScreen();
 
-		DELTA_MIN = 1.0f/30;
+		DELTA_MIN = 1.0f/SRPG.FPS;
 	}
 
 	private int battleCount;
@@ -167,7 +166,7 @@ class GameLogic implements Runnable {
 		while(true) {
 			long startTime = System.currentTimeMillis();
 
-			screen.update(delta / 1000);
+			screen.update(delta);
 
 			Screen next = screen.nextScreen();
 			if(next != screen) {
@@ -179,11 +178,11 @@ class GameLogic implements Runnable {
 			}
 			screen = next;
 
-			delta = System.currentTimeMillis() - startTime;
+			delta = (System.currentTimeMillis() - startTime) / 1000.0f;
 
 			if(delta < DELTA_MIN) {
 				try {
-					Thread.sleep((long) (DELTA_MIN - delta));
+					Thread.sleep((long) ((DELTA_MIN - delta) * 1000));
 				} catch (InterruptedException e) {
 					// TODO 自動生成された catch ブロック
 					e.printStackTrace();
