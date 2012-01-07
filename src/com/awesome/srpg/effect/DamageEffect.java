@@ -50,18 +50,6 @@ public class DamageEffect extends Actor implements Animation {
 		this.target = target;
 		this.damage = damage;
 
-		purePix = RenderUtil.loadPixmap(TEX_NAME);
-
-		Texture tex = new Texture(purePix);
-		Decal decal = Decal.newDecal(0, 0, new TextureRegion(tex), true);
-		decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-
-		anim = new AnimDecal(tex, decal, AnimDecal.hipHeight(end, stageSpan), TIME, 0);
-		anim.enableBillboard();
-		anim.disableDepthTest();
-		anim.initMug(SIZE * END_RATIO, SIZE * END_RATIO);
-		anim.initColor(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0));
-
 		target.exertDamage(damage);
 	}
 
@@ -101,6 +89,21 @@ public class DamageEffect extends Actor implements Animation {
 	public void render(GL10 gl) {
 		if(anim != null)
 			anim.render();
+	}
+
+	@Override
+	protected void initRender() {
+		purePix = RenderUtil.loadPixmap(TEX_NAME);
+
+		Texture tex = new Texture(purePix);
+		Decal decal = Decal.newDecal(0, 0, new TextureRegion(tex), true);
+		decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+
+		anim = new AnimDecal(tex, decal, AnimDecal.hipHeight(start, STAGE_SPAN), TIME, 0);
+		anim.enableBillboard();
+		anim.disableDepthTest();
+		anim.initMug(SIZE * END_RATIO, SIZE * END_RATIO);
+		anim.initColor(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0));
 	}
 
 	private void finish() {

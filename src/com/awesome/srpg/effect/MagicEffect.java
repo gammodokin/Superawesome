@@ -53,22 +53,6 @@ public class MagicEffect extends Actor implements Animation {
 		this.target = target;
 		this.damage = damage;
 
-		purePix = RenderUtil.loadPixmap(TEX_NAME);
-
-		trails = new AnimDecal[COUNT];
-		for(int i = 0; i < COUNT; i++) {
-
-			Texture tex = new Texture(purePix);
-			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
-			decal.setColor(1.0f, 1.0f, 1.0f, (float)(COUNT - i) / COUNT);
-//			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-//			decal.setBlending(GL10.GL_ONE_MINUS_DST_COLOR, GL10.GL_ONE);
-//			decal.setBlending(GL10.GL_ZERO, GL10.GL_SRC_COLOR);
-			AnimDecal a = trails[i] = new AnimDecal(tex, decal, AnimDecal.hipHeight(end.cpy(), stageSpan), TIME, END_DELAY * i / COUNT);
-			a.enableBillboard();
-			a.initMove(AnimDecal.hipHeight(start.cpy(), stageSpan));
-		}
-
 		trailPos = new Vector3[COUNT];
 		for(int i = 0; i < COUNT; i++)
 			trailPos[i] = start;
@@ -112,6 +96,25 @@ public class MagicEffect extends Actor implements Animation {
 		if(trails != null)
 			for(AnimDecal t : trails)
 				t.render();
+	}
+
+	@Override
+	protected void initRender() {
+		purePix = RenderUtil.loadPixmap(TEX_NAME);
+
+		trails = new AnimDecal[COUNT];
+		for(int i = 0; i < COUNT; i++) {
+
+			Texture tex = new Texture(purePix);
+			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
+			decal.setColor(1.0f, 1.0f, 1.0f, (float)(COUNT - i) / COUNT);
+//			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+//			decal.setBlending(GL10.GL_ONE_MINUS_DST_COLOR, GL10.GL_ONE);
+//			decal.setBlending(GL10.GL_ZERO, GL10.GL_SRC_COLOR);
+			AnimDecal a = trails[i] = new AnimDecal(tex, decal, AnimDecal.hipHeight(end.cpy(), STAGE_SPAN), TIME, END_DELAY * i / COUNT);
+			a.enableBillboard();
+			a.initMove(AnimDecal.hipHeight(start.cpy(), STAGE_SPAN));
+		}
 	}
 
 	private void finish() {

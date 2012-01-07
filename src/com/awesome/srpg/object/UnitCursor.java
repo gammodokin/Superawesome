@@ -29,12 +29,6 @@ public class UnitCursor extends Actor {
 
 		STAGE_SPAN = stageSpan;
 		SIZE = stageSpan;
-
-		tex = new Texture(RenderUtil.loadPixmap(TEX_NAME));
-
-		decal = Decal.newDecal(SIZE, SIZE * 1.2f, new TextureRegion(tex), true);
-
-		SRPG.getRenderer().addDecalToBatch(decal, false);
 	}
 
 	@Override
@@ -60,6 +54,14 @@ public class UnitCursor extends Actor {
 		SRPG.getRenderer().removeDecalFromBatch(decal);
 
 		super.dispose();
+	}
+
+	@Override
+	protected void initRender() {
+		tex = new Texture(RenderUtil.loadPixmap(TEX_NAME));
+		decal = Decal.newDecal(SIZE, SIZE * 1.2f, new TextureRegion(tex), true);
+
+		SRPG.getRenderer().addDecalToBatch(decal, false);
 	}
 
 	public void setUnit(Unit u) {

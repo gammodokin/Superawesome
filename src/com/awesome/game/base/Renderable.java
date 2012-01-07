@@ -15,4 +15,15 @@ public abstract class Renderable implements Disposable {
 		SRPG.getRenderer().removeRenderable(this);
 	}
 
+	private boolean initedRender = false;
+
+	public boolean isInitedRender() { return initedRender; }
+
+	public void initRendering() {
+		initedRender = true;
+		initRender();
+	}
+
+	protected void initRender() {}
+
 }

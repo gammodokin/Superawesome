@@ -52,23 +52,6 @@ public class CureEffect extends Actor implements Animation {
 
 		this.target = target;
 		this.damage = damage;
-
-		purePix = RenderUtil.loadPixmap(TEX_NAME);
-
-		trails = new AnimDecal[COUNT];
-		for(int i = 0; i < COUNT; i++) {
-
-			Texture tex = new Texture(purePix);
-			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
-			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-			decal.rotateX(-90);
-			AnimDecal a = trails[i] = new AnimDecal(tex, decal, end, TIME, END_DELAY * i / COUNT);
-//			a.initMove(start);
-			a.disableDepthTest();
-			a.initMug(stageSpan / 3, stageSpan / 3);
-			a.initColor(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
-
-		}
 	}
 
 	@Override
@@ -109,6 +92,25 @@ public class CureEffect extends Actor implements Animation {
 		if(trails != null)
 			for(AnimDecal t : trails)
 				t.render();
+	}
+
+	@Override
+	protected void initRender() {
+		purePix = RenderUtil.loadPixmap(TEX_NAME);
+
+		trails = new AnimDecal[COUNT];
+		for(int i = 0; i < COUNT; i++) {
+
+			Texture tex = new Texture(purePix);
+			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
+			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+			decal.rotateX(-90);
+			AnimDecal a = trails[i] = new AnimDecal(tex, decal, end, TIME, END_DELAY * i / COUNT);
+//			a.initMove(start);
+			a.disableDepthTest();
+			a.initMug(STAGE_SPAN / 3, STAGE_SPAN / 3);
+			a.initColor(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
 	}
 
 	private void finish() {

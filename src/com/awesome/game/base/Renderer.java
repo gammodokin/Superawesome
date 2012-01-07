@@ -26,6 +26,7 @@ public class Renderer {
 	protected static Renderer instance;
 
 	private List<Renderable> renList;
+	private List<Renderable> renInitList;
 
 	private Map<String, Texture> textureMap = new HashMap<String, Texture>();
 	private Map<String, Mesh> meshMap = new HashMap<String, Mesh>();
@@ -47,7 +48,9 @@ public class Renderer {
 	}
 
 	protected Renderer(GL10 gl) {
-		this.renList = Collections.synchronizedList(new LinkedList<Renderable>());
+		renList = Collections.synchronizedList(new LinkedList<Renderable>());
+		renInitList = Collections.synchronizedList(new LinkedList<Renderable>());
+
 		decals = Collections.synchronizedList(new LinkedList<Decal>());
 		noDepthDecals = Collections.synchronizedList(new LinkedList<Decal>());
 
@@ -82,6 +85,7 @@ public class Renderer {
 	}
 
 	public void addRenderable(Renderable ren) {
+		renInitList.add(ren);
 		renList.add(ren);
 	}
 
@@ -158,6 +162,14 @@ public class Renderer {
 		//			System.out.println("\n-----------\nrenList : " + renList + "\n------------\n");
 		//			rensize = renList.size();
 		//		}
+
+		synchronized (renInitList) {
+			for(Renderable ren : renInitList)
+				if(!ren.isInitedRender())
+					ren.initRendering();
+
+			renInitList.clear();
+		}
 
 		animManager.update();
 

@@ -5,6 +5,7 @@ public abstract class Actor extends Renderable {
 
 	protected Screen screen;
 
+
 	protected Actor(Screen screen) {
 		super();
 		this.screen = screen;

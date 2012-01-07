@@ -68,8 +68,6 @@ public class Unit extends Actor {
 		this.operator = operator;
 		//		operator = new SimpleAttackOperator(this, status);
 
-		initGraph();
-
 		setPos(cx, cy);
 		setRealCoord(stage.coordToReal(cx, cy));
 
@@ -120,7 +118,7 @@ public class Unit extends Actor {
 	public void setRealCoord(Vector3 rc) {
 		realCoord = rc;
 
-		if(SRPG.VIEW)
+		if(SRPG.VIEW && decal != null)
 			decal.setPosition(realCoord.x, realCoord.y + stage.SPAN/2, realCoord.z);
 	}
 
@@ -207,6 +205,11 @@ public class Unit extends Actor {
 		super.dispose();
 		//		mesh.dispose();
 		//		texture.dispose();
+	}
+
+	@Override
+	protected void initRender() {
+		initGraph();
 	}
 
 	@Override

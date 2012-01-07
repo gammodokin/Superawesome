@@ -154,9 +154,6 @@ public class Stage extends Actor {
 		LINES = (short)lines;
 		SPAN = SCALE / LINES;
 
-		initCube();
-		initLine();
-
 		this.cells = cells;
 	}
 
@@ -274,6 +271,12 @@ public class Stage extends Actor {
 
 	@Override
 	public void update(float delta) {
+	}
+
+	@Override
+	protected void initRender() {
+		initCube();
+		initLine();
 	}
 
 	public Vector3 coordToReal(int cx, int cy) {
