@@ -1,5 +1,9 @@
 package com.awesome.srpg.effect;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Animation;
 import com.awesome.game.base.RenderUtil;
@@ -35,7 +39,7 @@ public class MagicEffect extends Actor implements Animation {
 	private Damage damage;
 
 	private Pixmap purePix;
-	private AnimDecal[] trails;
+	private List<AnimDecal> trails;
 
 	private Vector3[] trailPos;
 
@@ -85,10 +89,15 @@ public class MagicEffect extends Actor implements Animation {
 		if(!started || finished)
 			return;
 
+		if(trails == null)	// ”ñ“¯Šú‚ÌŠÖŒW
+			return;
+
 		now += delta;
 
-		for(AnimDecal t : trails)
-			t.update(delta);
+		synchronized (trails) {
+			for(AnimDecal t : trails)
+				t.update(delta);
+		}
 	}
 
 	@Override
@@ -102,18 +111,21 @@ public class MagicEffect extends Actor implements Animation {
 	protected void initRender() {
 		purePix = RenderUtil.loadPixmap(TEX_NAME);
 
-		trails = new AnimDecal[COUNT];
-		for(int i = 0; i < COUNT; i++) {
-
-			Texture tex = new Texture(purePix);
-			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
-			decal.setColor(1.0f, 1.0f, 1.0f, (float)(COUNT - i) / COUNT);
-//			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-//			decal.setBlending(GL10.GL_ONE_MINUS_DST_COLOR, GL10.GL_ONE);
-//			decal.setBlending(GL10.GL_ZERO, GL10.GL_SRC_COLOR);
-			AnimDecal a = trails[i] = new AnimDecal(tex, decal, AnimDecal.hipHeight(end.cpy(), STAGE_SPAN), TIME, END_DELAY * i / COUNT);
-			a.enableBillboard();
-			a.initMove(AnimDecal.hipHeight(start.cpy(), STAGE_SPAN));
+		trails = Collections.synchronizedList(new ArrayList<AnimDecal>(COUNT));
+		synchronized(trails) {
+			for(int i = 0; i < COUNT; i++) {
+				Texture tex = new Texture(purePix);
+				Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
+				decal.setColor(1.0f, 1.0f, 1.0f, (float)(COUNT - i) / COUNT);
+				//			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+				//			decal.setBlending(GL10.GL_ONE_MINUS_DST_COLOR, GL10.GL_ONE);
+				//			decal.setBlending(GL10.GL_ZERO, GL10.GL_SRC_COLOR);
+				AnimDecal ad = new AnimDecal(tex, decal, AnimDecal.hipHeight(end.cpy(), STAGE_SPAN), TIME, END_DELAY * i / COUNT);
+				trails.add(ad);
+				AnimDecal a = ad;
+				a.enableBillboard();
+				a.initMove(AnimDecal.hipHeight(start.cpy(), STAGE_SPAN));
+			}
 		}
 	}
 

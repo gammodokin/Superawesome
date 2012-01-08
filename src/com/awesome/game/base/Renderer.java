@@ -2,6 +2,7 @@ package com.awesome.game.base;
 
 import static com.awesome.game.base.RenderUtil.TEXTURE_PATH;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -39,7 +41,12 @@ public class Renderer {
 	private DecalBatch decalBatch;
 	private DecalBatch noDepthBatch;
 
+	private List<Sprite2D> sprites;
+	private SpriteBatch spriteBatch;
+
 	private Camera camera;
+
+	private static final boolean SYNC = false;
 
 	public static Renderer getInstance(GL10 gl) {
 		if(instance == null)
@@ -48,11 +55,25 @@ public class Renderer {
 	}
 
 	protected Renderer(GL10 gl) {
-		renList = Collections.synchronizedList(new LinkedList<Renderable>());
-		renInitList = Collections.synchronizedList(new LinkedList<Renderable>());
+		if(SYNC) {
+			renList = Collections.synchronizedList(new LinkedList<Renderable>());
+			renInitList = Collections.synchronizedList(new LinkedList<Renderable>());
 
-		decals = Collections.synchronizedList(new LinkedList<Decal>());
-		noDepthDecals = Collections.synchronizedList(new LinkedList<Decal>());
+			decals = Collections.synchronizedList(new LinkedList<Decal>());
+			noDepthDecals = Collections.synchronizedList(new LinkedList<Decal>());
+
+			sprites = Collections.synchronizedList(new LinkedList<Sprite2D>());
+		} else {
+			renList = new LinkedList<Renderable>();
+			renInitList = new LinkedList<Renderable>();
+
+			decals = new LinkedList<Decal>();
+			noDepthDecals = new LinkedList<Decal>();
+
+			sprites = new LinkedList<Sprite2D>();
+		}
+
+		spriteBatch = new SpriteBatch();
 
 		animManager = new AnimationManager();
 
@@ -93,7 +114,6 @@ public class Renderer {
 		renList.remove(ren);
 	}
 
-	//	private final static String TEXTURE_PATH = "res/model/";
 	public void entry(String textureName) {
 		Texture texture = new Texture(Gdx.files.internal(TEXTURE_PATH + textureName), true);
 		texture.setFilter(TextureFilter.MipMap, TextureFilter.Linear);
@@ -139,6 +159,14 @@ public class Renderer {
 		return meshMap.get(name);
 	}
 
+	public void addToSpriteBatch(Sprite2D sprite) {
+		sprites.add(sprite);
+	}
+
+	public void removeFromSpriteBatch(Sprite2D sprite) {
+		sprites.remove(sprite);
+	}
+
 	public Decal getDecal(String name) {
 		return decalMap.get(name);
 	}
@@ -163,8 +191,16 @@ public class Renderer {
 		//			rensize = renList.size();
 		//		}
 
-		synchronized (renInitList) {
-			for(Renderable ren : renInitList)
+		if(SYNC) {
+			synchronized (renInitList) {
+				for(Renderable ren : renInitList)
+					if(!ren.isInitedRender())
+						ren.initRendering();
+
+				renInitList.clear();
+			}
+		} else {
+			for(Renderable ren : new ArrayList<Renderable>(renInitList))
 				if(!ren.isInitedRender())
 					ren.initRendering();
 
@@ -182,24 +218,52 @@ public class Renderer {
 
 		setupCamera();
 
-		synchronized(renList) {
-			for(Renderable ren : renList) {
+		if(SYNC) {
+			synchronized(renList) {
+				for(Renderable ren : renList) {
+					ren.render(gl);
+				}
+			}
+
+			synchronized(decals) {
+				for(Decal d : decals)
+					decalBatch.add(d);
+				gl.glEnable(GL10.GL_DEPTH_TEST);
+				decalBatch.flush();
+			}
+
+			synchronized(noDepthDecals) {
+				for(Decal d : noDepthDecals)
+					noDepthBatch.add(d);
+				gl.glDisable(GL10.GL_DEPTH_TEST);
+				noDepthBatch.flush();
+			}
+
+			spriteBatch.begin();
+			synchronized (sprites) {
+				for(Sprite2D s : sprites)
+					s.draw(spriteBatch);
+			}
+			spriteBatch.end();
+		} else {
+			for(Renderable ren : new ArrayList<Renderable>(renList)) {
 				ren.render(gl);
 			}
-		}
 
-		synchronized(decals) {
-			for(Decal d : decals)
+			for(Decal d : new ArrayList<Decal>(decals))
 				decalBatch.add(d);
 			gl.glEnable(GL10.GL_DEPTH_TEST);
 			decalBatch.flush();
-		}
 
-		synchronized(noDepthDecals) {
-			for(Decal d : noDepthDecals)
+			for(Decal d : new ArrayList<Decal>(noDepthDecals))
 				noDepthBatch.add(d);
 			gl.glDisable(GL10.GL_DEPTH_TEST);
 			noDepthBatch.flush();
+
+			spriteBatch.begin();
+			for(Sprite2D s : new ArrayList<Sprite2D>(sprites))
+				s.draw(spriteBatch);
+			spriteBatch.end();
 		}
 
 	}
@@ -211,7 +275,7 @@ public class Renderer {
 		float vw = 2f * aspectRatio;
 		float vh = 2f;
 
-		camera = new PerspectiveCamera(30, vw, vh);// new OrthographicCamera(2f * aspectRatio, 2f);
+		camera = new PerspectiveCamera(30, vw, vh);	// new OrthographicCamera(2f * aspectRatio, 2f);
 
 		initDecalBatch(camera);
 	}
@@ -220,6 +284,9 @@ public class Renderer {
 		for(Renderable ren : renList) {
 			ren.dispose();
 		}
+
+		for(Sprite2D s : sprites)
+			s.dispose();
 
 		for(Texture t : textureMap.values())
 			t.dispose();

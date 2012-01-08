@@ -79,6 +79,9 @@ public class DamageEffect extends Actor implements Animation {
 		if(!started || done)
 			return;
 
+		if(anim == null)
+			return;
+
 		now += delta;
 
 		anim.update(delta);

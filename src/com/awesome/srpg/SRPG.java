@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import com.awesome.game.base.RenderUtil;
@@ -109,6 +110,9 @@ public class SRPG implements ApplicationListener {
 	@Override
 	public void resize(int width, int height) {
 		ren.resize(width, height);
+
+//		System.out.println("display mode change : " + Gdx.app.getGraphics().supportsDisplayModeChange());
+//		System.out.println("display modes : " + Arrays.toString(Gdx.app.getGraphics().getDisplayModes()));
 	}
 
 	@Override

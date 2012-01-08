@@ -210,6 +210,7 @@ public class Unit extends Actor {
 	@Override
 	protected void initRender() {
 		initGraph();
+		setRealCoord(stage.coordToReal(cx, cy));
 	}
 
 	@Override

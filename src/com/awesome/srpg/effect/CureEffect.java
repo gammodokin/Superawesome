@@ -1,5 +1,9 @@
 package com.awesome.srpg.effect;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Animation;
 import com.awesome.game.base.RenderUtil;
@@ -35,7 +39,7 @@ public class CureEffect extends Actor implements Animation {
 	private Damage damage;
 
 	private Pixmap purePix;
-	private AnimDecal[] trails;
+	private List<AnimDecal> trails;
 
 
 	private float now = 0.0f;
@@ -47,7 +51,7 @@ public class CureEffect extends Actor implements Animation {
 		SIZE = stageSpan * 3.0f;
 
 		this.start = start;
-//		this.end = start.cpy().add(new Vector3(0, stageSpan, 0));
+		//		this.end = start.cpy().add(new Vector3(0, stageSpan, 0));
 		this.end = start.cpy().add(0, stageSpan / 2, 0);
 
 		this.target = target;
@@ -81,15 +85,20 @@ public class CureEffect extends Actor implements Animation {
 		if(!started || finished)
 			return;
 
-		now += delta;
+		if(trails == null)	// ”ñ“¯Šú‚ÌŠÖŒW
+			return;
 
-		for(AnimDecal t : trails)
-			t.update(delta);
+		synchronized (trails) {
+			for(AnimDecal t : trails)
+				t.update(delta);
+		}
+
+		now += delta;
 	}
 
 	@Override
 	public void render(GL10 gl) {
-		if(trails != null)
+		if(trails != null)	// sync‚µ‚Ä‚Ä‚àƒ_ƒ
 			for(AnimDecal t : trails)
 				t.render();
 	}
@@ -98,18 +107,21 @@ public class CureEffect extends Actor implements Animation {
 	protected void initRender() {
 		purePix = RenderUtil.loadPixmap(TEX_NAME);
 
-		trails = new AnimDecal[COUNT];
-		for(int i = 0; i < COUNT; i++) {
-
-			Texture tex = new Texture(purePix);
-			Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
-			decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-			decal.rotateX(-90);
-			AnimDecal a = trails[i] = new AnimDecal(tex, decal, end, TIME, END_DELAY * i / COUNT);
-//			a.initMove(start);
-			a.disableDepthTest();
-			a.initMug(STAGE_SPAN / 3, STAGE_SPAN / 3);
-			a.initColor(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
+		trails = Collections.synchronizedList(new ArrayList<AnimDecal>(COUNT));
+		synchronized (trails) {
+			for(int i = 0; i < COUNT; i++) {
+				Texture tex = new Texture(purePix);
+				Decal decal = Decal.newDecal(SIZE, SIZE, new TextureRegion(tex), true);
+				decal.setBlending(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+				decal.rotateX(-90);
+				AnimDecal ad = new AnimDecal(tex, decal, end, TIME, END_DELAY * i / COUNT);
+				trails.add(ad);
+				AnimDecal a = ad;
+				//			a.initMove(start);
+				a.disableDepthTest();
+				a.initMug(STAGE_SPAN / 3, STAGE_SPAN / 3);
+				a.initColor(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
+			}
 		}
 	}
 

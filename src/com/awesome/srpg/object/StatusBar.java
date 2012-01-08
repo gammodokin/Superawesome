@@ -42,18 +42,6 @@ public class StatusBar extends Actor {
 		st = unit.getStatus();
 		MAX_WIDTH = stageSpan;
 		HEIGHT = stageSpan * 0.2f;
-
-		RenderUtil.loadPixmap(HP_TEX_NAME);
-		RenderUtil.loadPixmap(MP_TEX_NAME);
-
-		hpPurePix = RenderUtil.getPixmap(HP_TEX_NAME);
-		mpPurePix = RenderUtil.getPixmap(MP_TEX_NAME);
-
-		pix = new Pixmap(256, 256, Pixmap.Format.RGBA8888);
-		tex = new Texture(pix);
-		decal = Decal.newDecal(MAX_WIDTH, HEIGHT, new TextureRegion(tex), true);
-
-		SRPG.getRenderer().addDecalToBatch(decal, false);
 	}
 
 
@@ -62,6 +50,7 @@ public class StatusBar extends Actor {
 //		st = unit.getStatus();
 
 		Vector3 rc = unit.getRealCoord();
+		if(decal != null)	// ”ñ“¯Šú‚ÌŠÖŒW
 		decal.setPosition(rc.x, rc.y + MAX_WIDTH * 1.2f, rc.z);
 	}
 
@@ -93,6 +82,21 @@ public class StatusBar extends Actor {
 		tex.dispose();
 		SRPG.getRenderer().removeDecalFromBatch(decal);
 		super.dispose();
+	}
+
+	@Override
+	protected void initRender() {
+		RenderUtil.loadPixmap(HP_TEX_NAME);
+		RenderUtil.loadPixmap(MP_TEX_NAME);
+
+		hpPurePix = RenderUtil.getPixmap(HP_TEX_NAME);
+		mpPurePix = RenderUtil.getPixmap(MP_TEX_NAME);
+
+		pix = new Pixmap(256, 256, Pixmap.Format.RGBA8888);
+		tex = new Texture(pix);
+		decal = Decal.newDecal(MAX_WIDTH, HEIGHT, new TextureRegion(tex), false);
+
+		SRPG.getRenderer().addDecalToBatch(decal, false);
 	}
 
 }

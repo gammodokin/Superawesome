@@ -35,10 +35,14 @@ public class UnitCursor extends Actor {
 	public void update(float delta) {
 //		rotation += ROTATE_SPEED;
 //		rotation %= 180;
-		if(unit == null)
+		if(unit == null)	// ”ñ“¯Šú‚ÌŠÖŒW
 			return;
 
 		Vector3 rc = unit.getRealCoord();
+
+		if(decal == null)	// ”ñ“¯Šú‚ÌŠÖŒW
+			return;
+
 		decal.setPosition(rc.x, rc.y + STAGE_SPAN * 1.7f, rc.z);
 		decal.rotateY(ROTATE_SPEED * delta);
 	}

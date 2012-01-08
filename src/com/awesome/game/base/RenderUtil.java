@@ -13,7 +13,11 @@ public class RenderUtil {
 
 	public static final String TEXTURE_PATH = "res/model/";
 
-	private static Map<String, Pixmap> pixmap = new HashMap<String, Pixmap>();
+	private static Map<String, Pixmap> pixmap;
+
+	static {
+		pixmap = new HashMap<String, Pixmap>();// Collections.synchronizedMap(new HashMap<String, Pixmap>());
+	}
 
 	public static Pixmap loadPixmap(String filename) {
 		if(!pixmap.containsKey(filename)) {
