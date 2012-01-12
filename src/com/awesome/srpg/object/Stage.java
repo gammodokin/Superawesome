@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Stage extends Actor {
 
+	public static final boolean VIEW = false;
+
 	public final float SCALE = 2;
 	public final short LINES;
 	public final float SPAN;
@@ -253,8 +255,10 @@ public class Stage extends Actor {
 	}
 
 	public void render(GL10 gl){
-		cubeMesh.render(GL10.GL_TRIANGLES);
-		lineMesh.render(GL10.GL_LINES);
+		if(VIEW) {
+			cubeMesh.render(GL10.GL_TRIANGLES);
+			lineMesh.render(GL10.GL_LINES);
+		}
 	}
 
 	private void arrMul(float[] arr, float mul) {

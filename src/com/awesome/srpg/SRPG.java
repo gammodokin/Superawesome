@@ -157,7 +157,7 @@ class GameLogic implements Runnable {
 	public GameLogic() {
 		screen = new BattleScreen();
 
-		DELTA_MIN = 1.0f/SRPG.FPS;
+		DELTA_MIN = 1000.0f/SRPG.FPS;
 	}
 
 	private int battleCount;
@@ -170,7 +170,7 @@ class GameLogic implements Runnable {
 		while(true) {
 			long startTime = System.currentTimeMillis();
 
-			screen.update(delta);
+			screen.update(delta / 1000);
 
 			Screen next = screen.nextScreen();
 			if(next != screen) {
@@ -182,11 +182,11 @@ class GameLogic implements Runnable {
 			}
 			screen = next;
 
-			delta = (System.currentTimeMillis() - startTime) / 1000.0f;
+			delta = System.currentTimeMillis() - startTime;
 
 			if(delta < DELTA_MIN) {
 				try {
-					Thread.sleep((long) ((DELTA_MIN - delta) * 1000));
+					Thread.sleep((long) (DELTA_MIN - delta));
 				} catch (InterruptedException e) {
 					// TODO Ž©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
 					e.printStackTrace();
@@ -194,6 +194,8 @@ class GameLogic implements Runnable {
 
 				delta = DELTA_MIN;
 			}
+
+//			System.out.println("delta time : " + (System.currentTimeMillis() - startTime));
 		}
 
 	}

@@ -46,7 +46,7 @@ public class Renderer {
 
 	private Camera camera;
 
-	private static final boolean SYNC = false;
+	private static final boolean SYNC = true;
 
 	public static Renderer getInstance(GL10 gl) {
 		if(instance == null)
@@ -281,12 +281,16 @@ public class Renderer {
 	}
 
 	public void dispose() {
-		for(Renderable ren : renList) {
-			ren.dispose();
+		synchronized (renList) {
+			for(Renderable ren : renList) {
+				ren.dispose();
+			}
 		}
 
-		for(Sprite2D s : sprites)
-			s.dispose();
+		synchronized (sprites) {
+			for(Sprite2D s : sprites)
+				s.dispose();
+		}
 
 		for(Texture t : textureMap.values())
 			t.dispose();

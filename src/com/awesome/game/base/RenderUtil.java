@@ -42,7 +42,10 @@ public class RenderUtil {
 		return npm;
 	}
 
+
 	public static void setupBillboard(Decal decal) {
+		assert decal != null;
+
 		Camera camera = SRPG.getRenderer().getCamera();
 		decal.lookAt(camera.position, camera.up);
 	}

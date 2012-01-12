@@ -9,7 +9,18 @@ public class ChangeTracer <T> {
 	}
 
 	public boolean isChanged(T t1) {
-		return !t0.equals(t1);
+		T t00 = t0;
+		t0 = t1;
+
+		if(t00 == null) {
+			if(t1 == null) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return !t00.equals(t1);
+		}
 	}
 
 }
