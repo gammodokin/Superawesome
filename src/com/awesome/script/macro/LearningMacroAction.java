@@ -16,16 +16,17 @@ public class LearningMacroAction {
 
 
 	private static final int SCRIPT_LEN = 3;
+	private static final int MACRO_LEN = 3;
 
 	private Rule[] rule;
 	// CEM固有パラメータ
-	private final int N = 30;			// 個体数
+	private final int N = 50;			// 個体数
 	private final int M;
 	private final double rho = 0.1;	// 選択率
-	private final double alpha = 0.3;	// ステップサイズ
+	private final double alpha = 0.7;	// ステップサイズ
 
-	public static final int K = 3;	// 学習するマクロの数
-	public static final int T = 60;	// トレーニング一回あたりの戦闘数
+	public static final int K = 10;	// 学習するマクロの数
+	public static final int T = 100;	// トレーニング一回あたりの戦闘数
 
 	public static final int BATTLE_COUNT = K * T;
 
@@ -56,7 +57,7 @@ public class LearningMacroAction {
 		G = new Record[T];
 
 //		macroCount++;
-		trainingCount = 1;
+		trainingCount = 0;
 
 	}
 
@@ -65,17 +66,18 @@ public class LearningMacroAction {
 			r.initActivated();
 	}
 
-	private int trainingCount = 1;
+	private int trainingCount = 0;
 
 	public void eval(MacroScript s, Record record) {
-		G[trainingCount - 1] = record;
+		G[trainingCount] = record;
 		s.setF(getFitness(s, record, L));
-		S[trainingCount - 1] = s;
-		p = updateProbabilities(p, trainingCount, S);	// SとFは0からiまで
+		S[trainingCount] = s;
 
-		System.out.println("F : " + s.getF());
+		p = updateProbabilities(p, trainingCount + 1, S);	// SとFは0からiまで
 
-		if(++trainingCount >= T + 1) {
+//		System.out.println("F : " + s.getF());
+
+		if(++trainingCount >= T) {
 			Macro M = extractMacro(p);
 			L.add(M);	// リストに新しいマクロを追加する
 
@@ -112,8 +114,11 @@ public class LearningMacroAction {
 //			L.add(M);	// リストに新しいマクロを追加する
 //		}
 //	}
-
 	private Macro extractMacro(ProbV p) {
+		return extractMacro(p, w, M, N, MACRO_LEN);
+	}
+
+	private Macro extractMacro(ProbV p, int[][] w, int M, int N, int MACRO_LEN) {
 		double[] v = new double[M];
 		for(int j = 0; j < M; j++)
 			for(int i = 0; i < N; i++)
@@ -122,13 +127,11 @@ public class LearningMacroAction {
 		for(int j = 0; j < M; j++)
 			v[j] /= N;
 
-//		for(int[] ds : w)
-//			System.out.println(Arrays.toString(ds));
-
+		// vは一戦闘あたりに使われる確率
 		System.out.println("v : " + Arrays.toString(v));
 
-		int[] top = new int[3];
-		for(int rank = 0; rank < 3; rank++) {
+		int[] top = new int[MACRO_LEN];
+		for(int rank = 0; rank < MACRO_LEN; rank++) {
 			double largest = Integer.MIN_VALUE;
 			for(int j = 0; j < M; j++)
 				if(v[j] > largest) {
@@ -138,21 +141,26 @@ public class LearningMacroAction {
 			v[top[rank]] = -1;	// これ以降選ばれないため
 		}
 
-		Macro macro = new Macro(rule[top[0]], rule[top[1]], rule[top[2]]);
+		List<Rule> rules = new ArrayList<Rule>(MACRO_LEN);
+		for(int i : top)
+			rules.add(rule[i]);
+
+		Macro macro = new Macro(rules.toArray(new Rule[0]));
 
 		System.out.println("extracted macro : \n" + macro);
-
-//		for(int i = 0; i < M; i++) {
-//			System.out.println(rule[i] + " // " + v[i]);
-//		}
 
 		return macro;
 	}
 
-
 	private ProbV updateProbabilities(ProbV p, int n, MacroScript[] scriptList) {
-		//int M = p.length();	// ルールベース中のルールの数
+		return updateProbabilities(p, n, scriptList, N, rho);
+	}
+	private ProbV updateProbabilities(ProbV p, int n, MacroScript[] scriptList, int N, double rho) {
 		if(n % N == 0) {	// 全個体の更新
+			for(int i = 1; i <= N; i++)
+				for(int j = 0; j < M; j++)
+					w[i - 1][j] = scriptList[n - i].firedInPhase(rule[j]) ? 1 : 0;	// 対応するphase中に実行されたかどうか
+
 			// 適応度に従って直近N個のサンプルをソートする。ベストなのが最初
 			scriptList = sortLast(scriptList, N);
 			int Ne = (int)(rho * N);	// エリートサンプルの数
@@ -161,25 +169,21 @@ public class LearningMacroAction {
 
 			for(int j = 0; j < M; j++) {
 				pd.set(j, 0);
-				for(int i = 0; i < Ne; i++)
+				for(int i = 0; i < Ne; i++) {
 					if(scriptList[i].contains(rule[j])) {
-						w[i][j] = scriptList[i].firedInPhase(rule[j]) ? 1 : 0;	// 対応するphase中に実行されたかどうか
 						pd.set(j, pd.get(j) + 1);
 					}
+				}
 				pd.set(j, pd.get(j) / Ne);
 			}
+			pd.probNor();
+
 			// 確率ベクトルを更新する
 			for(int j = 0; j < M; j++)
 				p.set(j, (1 - alpha)*p.get(j) + alpha*pd.get(j));
 
-			// この時点で合計1.0になっててもらわなきゃ困る！
-			p.probNor();
-
-//			System.out.println("elite samples : ");
-//			for(int i = 0; i < Ne; i++)
-//				System.out.println(scriptList[i]);
-			System.out.println("p' : " + pd);
-			System.out.println("p updated : " + p);
+//			System.out.println("p' : " + pd);
+//			System.out.println("p updated : " + p);
 		}
 
 		return p;
@@ -191,17 +195,34 @@ public class LearningMacroAction {
 			return (int)Math.signum(o2.getF() - o1.getF());
 		}
 	};
+
 	private MacroScript[] sortLast(MacroScript[] scriptList, int n) {
-		Arrays.sort(scriptList, 0, n, SCRIPT_COM);
-		return scriptList;
+		int last = scriptList.length;
+		for(int i = 0; i < scriptList.length; i++)
+			if(scriptList[i] == null) {
+				last = i;
+				break;
+			}
+		MacroScript[] copy = Arrays.copyOfRange(scriptList, last - n, last);
+		Arrays.sort(copy, SCRIPT_COM);
+		return copy;
 	}
 
 
-	static final double c = 1.0;//0.25;
+	static final double c = 0.25;
 	private double getFitness(MacroScript script, Record gameRecord, List<Macro> l) {
 		// A : 学習エージェント、S : Staticエージェント
 		Agent A = gameRecord.A();
 		Agent Static = gameRecord.S();
+		double Fdiv = 0;
+		Fdiv = getFdiv(script, l);
+
+		double Fstr = WeightUpdateOneOnOne.Fstr(A, Static);
+
+		return Fstr + c * Fdiv;
+	}
+
+	private double getFdiv(MacroScript script, List<Macro> l) {
 		double Fdiv = 0;
 		for(Macro m : l)
 			for(int j = 0; j < M; j++)
@@ -209,15 +230,8 @@ public class LearningMacroAction {
 						|| (m.contains(rule[j]) && !script.contains(rule[j])) ? 1 : 0;
 		Fdiv /= K;
 
-		double Fstr = WeightUpdateOneOnOne.Fstr(A, Static);
-
-		return Fstr + c * Fdiv;
+		return Fdiv;
 	}
-
-//	private BattleRecord evaluateScript(Script script) {
-//		// TODO ゲームの実行
-//		return null;
-//	}
 
 	MacroScript generateScript() {
 		return generateScript(p, phase);

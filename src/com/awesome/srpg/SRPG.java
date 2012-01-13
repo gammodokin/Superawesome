@@ -37,10 +37,10 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class SRPG implements ApplicationListener {
 
-	public static final boolean VIEW = true;
+	public static final boolean VIEW = false;
 	public static final boolean CONSOLE_VIEW = false;
 	final static int BATTLE = LearningMacroAction.BATTLE_COUNT;
-	private static final boolean DONE_NOTICE = true;
+	private static final boolean DONE_NOTICE = false;
 
 	static final int FPS = 30;
 

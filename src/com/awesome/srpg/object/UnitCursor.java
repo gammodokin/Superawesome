@@ -54,8 +54,10 @@ public class UnitCursor extends Actor {
 
 	@Override
 	public void dispose() {
-		tex.dispose();
-		SRPG.getRenderer().removeDecalFromBatch(decal);
+		if(SRPG.VIEW) {
+			tex.dispose();
+			SRPG.getRenderer().removeDecalFromBatch(decal);
+		}
 
 		super.dispose();
 	}

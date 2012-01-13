@@ -16,7 +16,7 @@ class WeightUpdateOneOnOne {
 		if(A.ht > 0)
 			Fstr = 0.55 + 0.35 * A.htDiv0;
 		else
-			Fstr = 0.1 * Math.min(A.D / Agent.D_MAX, 1) + 0.1 * (1 - S.htDiv0);
+			Fstr = 0.1 * Math.min((double)A.D / Agent.D_MAX, 1) + 0.1 * (1 - S.htDiv0);
 
 		return Fstr;
 	}

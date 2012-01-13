@@ -78,9 +78,11 @@ public class StatusBar extends Actor {
 
 	@Override
 	public void dispose() {
-		pix.dispose();
-		tex.dispose();
-		SRPG.getRenderer().removeDecalFromBatch(decal);
+		if(SRPG.VIEW) {
+			pix.dispose();
+			tex.dispose();
+			SRPG.getRenderer().removeDecalFromBatch(decal);
+		}
 		super.dispose();
 	}
 

@@ -151,7 +151,7 @@ class MacroScript implements ActionScript{
 
 	@Override
 	public String toString() {
-		String str = "macro	: " + openingLines + "\n		: " + lines;
+		String str = "macro	: " + openingLines + "\n		: " + lines + "\n";
 		return str;
 	}
 

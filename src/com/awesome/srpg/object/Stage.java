@@ -2,6 +2,7 @@ package com.awesome.srpg.object;
 
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Screen;
+import com.awesome.srpg.SRPG;
 import com.awesome.srpg.logic.StageCell;
 import com.awesome.srpg.logic.UnitManager;
 import com.badlogic.gdx.graphics.Color;
@@ -268,8 +269,10 @@ public class Stage extends Actor {
 
 	@Override
 	public void dispose() {
-		cubeMesh.dispose();
-		lineMesh.dispose();
+		if(SRPG.VIEW) {
+			cubeMesh.dispose();
+			lineMesh.dispose();
+		}
 		super.dispose();
 	}
 
