@@ -63,9 +63,8 @@ public class UnitManager {
 	private static final float LIMIT = 0.0f;
 	private float time = -1;
 	public void scanStandbyUnit(float delta) {
-		if(SRPG.VIEW) {
+		if(SRPG.initial() && SRPG.VIEW) {
 			if(!SRPG.getRenderer().getAnimationManager().allSerialAnimationFinished()) {
-				//				System.out.println("animation");
 				return;
 			}
 
@@ -159,7 +158,8 @@ public class UnitManager {
 		for(Unit u : allUnits)
 			u.getOperater().destruct(result);
 
-		System.out.println("Win !! : " + corner + "\n");
+		if(SRPG.CONSOLE_VIEW)
+			System.out.println("Win !! : " + corner + "\n");
 		return true;
 	}
 

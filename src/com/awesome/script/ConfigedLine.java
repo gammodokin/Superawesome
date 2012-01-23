@@ -16,7 +16,8 @@ public class ConfigedLine implements Line {
 	private static final long serialVersionUID = 1L;
 
 	public static final Line
-	DIRECT_ATTACK_CLOSEST_ENEMY = 		new ConfigedLine(0, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST}, 					Skill.NORMAL, 0),
+	PASS = new ConfigedLine(-1, new Condition.Always(), new Target[] {Target.CLOSEST}, Skill.PASS, 0),
+	DIRECT_ATTACK_CLOSEST_ENEMY = 		new ConfigedLine(0, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST}, 					Skill.NORMAL, 0.1),
 	DIRECT_ATTACK_WEAKEST_ENEMY = 		new ConfigedLine(1, new Condition.Always(), new Target[] {Target.ENEMY, Target.WAKEST, Target.CLOSEST},	Skill.NORMAL, 0.5),
 	DIRECT_ATTACK_CLOSEST_SOLDIER = 	new ConfigedLine(2, new Condition.Always(), new Target[] {Target.ENEMY, Target.SOLDIER, Target.CLOSEST},	Skill.NORMAL, 0.8),
 	DIRECT_ATTACK_CLOSEST_WIZARD = 		new ConfigedLine(3, new Condition.Always(), new Target[] {Target.ENEMY, Target.WIZARD, Target.CLOSEST},	Skill.NORMAL, 0.9),
@@ -31,10 +32,10 @@ public class ConfigedLine implements Line {
 	MAGIC_ATTACK_WEAKEST_SOLDIER = 		new ConfigedLine(53, new Condition.Always(), new Target[] {Target.ENEMY, Target.SOLDIER, Target.WAKEST, Target.CLOSEST},	Skill.FIRE, 1.7),
 	FIRE_BALL_CLOSEST_ENEMY = 			new ConfigedLine(54, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST},	Skill.FIRE_BALL, 1.8),
 	MAGIC_HEAL_WEAKEST_FRIEND = 		new ConfigedLine(55, new Condition.Less(Condition.StatusType.HP, 50),	new Target[] {Target.FRIEND, Target.WAKEST, Target.CLOSEST},	Skill.HEAL, 16),
-	INTENSE_INT_CLOSEST_FRIEND_WIZARD = new ConfigedLine(56, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.WIZARD, Target.CLOSEST},	Skill.INTENSE_INT, 2.1),
+	INTENSE_INT_CLOSEST_FRIEND_WIZARD = new ConfigedLine(56, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.WIZARD, Target.CLOSEST},	Skill.INTENSE_INT, 2),
 	INTENSE_INT_CLOSEST_FRIEND_WIZARD_2 = new ConfigedLine(56.1, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.WIZARD, Target.CLOSEST},	Skill.INTENSE_INT_2, 2.1),
 	INTENSE_INT_CLOSEST_FRIEND_WIZARD_3 = new ConfigedLine(56.2, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.WIZARD, Target.CLOSEST},	Skill.INTENSE_INT_3, 2.1),
-	INTENSE_STR_CLOSEST_FRIEND = 		new ConfigedLine(57, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.CLOSEST},	Skill.INTENSE_STR, 2);
+	INTENSE_STR_CLOSEST_FRIEND = 		new ConfigedLine(57, new Condition.IsStatus(UnusualStatus.NONE),	new Target[] {Target.FRIEND, Target.CLOSEST},	Skill.INTENSE_STR, 2.1);
 
 	private final double ID;
 	private Condition cond;
@@ -50,6 +51,14 @@ public class ConfigedLine implements Line {
 		this.targetRules = targetRules;
 		this.skill = skill;
 		this.priority = priority;
+	}
+
+	public ConfigedLine(ConfigedLine line) {
+		this.ID = line.ID;
+		this.cond = line.cond;
+		this.targetRules = line.targetRules;
+		this.skill = line.skill;
+		this.priority = line.priority;
 	}
 
 	@Override

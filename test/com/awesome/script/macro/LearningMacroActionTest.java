@@ -125,7 +125,7 @@ public class LearningMacroActionTest {
 		int n = 3;
 		int N = 3;
 		double rho = 1.0;
-		double alpha = 0.3;
+		double alpha = 0.7;
 		int Ne = 3;//(int)(rho * N);
 
 		pa.method(lma, "updateProbabilities", p, n, mss, N, rho);
@@ -136,7 +136,6 @@ public class LearningMacroActionTest {
 		double ans0 = (1 - alpha) * p0.get(0) + alpha * pd0;
 
 		assertEquals("pd0 = " + pd0 +
-				"\n1-alpha = " + (1 - alpha) +
 				"\np0 = " + p.get(0), p.get(0), ans0, 0.001);
 
 		double sum = 0;

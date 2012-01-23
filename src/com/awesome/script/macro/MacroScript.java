@@ -14,6 +14,7 @@ import com.awesome.script.ConfigedLine;
 import com.awesome.script.Line;
 import com.awesome.script.dynamic.Rule;
 import com.awesome.script.macro.LearningMacroAction.Macro;
+import com.awesome.srpg.SRPG;
 import com.awesome.srpg.object.Unit;
 
 class MacroScript implements ActionScript{
@@ -82,12 +83,13 @@ class MacroScript implements ActionScript{
 			ruleMap.put(r.getLine(), r);
 		}
 
-		lineSet.add(ConfigedLine.DIRECT_ATTACK_CLOSEST_ENEMY);
+		lineSet.add(ConfigedLine.PASS);
 		lines.addAll(lineSet);
 
 		Collections.sort(lines);
 
-		System.out.println(lines);
+		if(SRPG.CONSOLE_VIEW)
+			System.out.println(lines);
 	}
 
 	public boolean contains(Rule rule) {
@@ -118,13 +120,12 @@ class MacroScript implements ActionScript{
 		return null;
 	}
 
+	// TODO このへん一つのBattleEnvironment的なクラスでまとめる
 	public Line selectRule(Unit actor, List<Unit> units, Unit[][] UnitMap, int turn) {
 		Line resultL = null;
 		if(opening != null && turn < OPENING_TURN)
 			for(Line l : openingLines) {
 				if(l.isUnderCondition(actor, units, UnitMap)) {
-					if(l != ConfigedLine.DIRECT_ATTACK_CLOSEST_ENEMY)	// この行動には評価がいらない
-						;//						ruleMap.get(l).activate();
 					resultL = l;
 					break;
 				}
@@ -132,26 +133,29 @@ class MacroScript implements ActionScript{
 		else
 			for(Line l : lines) {
 				if(l.isUnderCondition(actor, units, UnitMap)) {
-					if(l != ConfigedLine.DIRECT_ATTACK_CLOSEST_ENEMY) {	// この行動には評価がいらない
-						if((LEARNING_PHASE == 0 && turn < OPENING_TURN)
-								|| (LEARNING_PHASE == 1 && turn >= OPENING_TURN))
-							activatedInPhase.put(ruleMap.get(l), true);
-					}
-					//							ruleMap.get(l).activate();
+					if(isInLearningPhase(turn, OPENING_TURN, LEARNING_PHASE))
+						activatedInPhase.put(ruleMap.get(l), true);
 					resultL = l;
 					break;
 				}
 			}
 
-//		System.out.println("turn : " + turn + ", " + resultL);
-
 		assert resultL != null;
 		return resultL;
 	}
 
+	private static boolean isInLearningPhase(int turn, int OPENING, final int LEARNING) {
+		return (LEARNING == 0 && turn < OPENING)
+			|| (LEARNING == 1 && turn >= OPENING);
+	}
+
 	@Override
 	public String toString() {
-		String str = "macro	: " + openingLines + "\n		: " + lines + "\n";
+		StringBuilder sb = new StringBuilder();
+		for(Line l : lines)
+			sb.append(firedInPhase(ruleMap.get(l)) + ", ");
+
+		String str = "macro	: " + openingLines + "\n lines : " + lines + "\n fired : " + sb + "\n";
 		return str;
 	}
 

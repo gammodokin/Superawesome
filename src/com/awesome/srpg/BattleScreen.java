@@ -6,6 +6,7 @@ import java.util.List;
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Screen;
 import com.awesome.script.StaticScript;
+import com.awesome.script.macro.EpochRecorder;
 import com.awesome.script.macro.LearnMacroOp;
 import com.awesome.script.macro.UnitIDLM;
 import com.awesome.srpg.logic.StageCell;
@@ -68,6 +69,28 @@ public class BattleScreen implements Screen {
 //
 		manager.addUnit(new Unit(this, stage, LINES-1, LINES-1, UnitStatus.createEnemyMagician(), new ScriptOperator(new StaticScript(StaticScript.RULE_WIZARD)), r*0));
 //		manager.addUnit(new Unit(this, stage, LINES-2, LINES-1, UnitStatus.createEnemyMagician(), new ScriptOperator(new StaticScript(StaticScript.RULE_WIZARD)), r*0));
+	}
+
+	public BattleScreen(EpochRecorder recorder) {
+
+		nextScreen = this;
+
+		cells = new StageCell[LINES][LINES];
+		for(int x = 0; x < cells.length; x++)
+			for(int y = 0; y < cells.length; y++)
+				cells[x][y] = StageCell.Normal;
+
+		manager = new UnitManager(cells);
+
+
+		stage = new Stage(this, LINES, cells);
+
+		cursor = new UnitCursor(this, stage.SPAN);
+
+		double r = 12.5;
+		manager.addUnit(new Unit(this, stage, 0, 0, UnitStatus.createOwnMagician(), new LearnMacroOp(recorder.getLearner()), r*0));
+
+		manager.addUnit(new Unit(this, stage, LINES-1, LINES-1, UnitStatus.createEnemyMagician(), new ScriptOperator(recorder.getStat()), r*0));
 	}
 
 	@Override

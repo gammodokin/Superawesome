@@ -14,23 +14,27 @@ import com.awesome.srpg.SRPG;
 
 public class LearningMacroAction {
 
+	private static final boolean TEIAN = true;
+	private static final boolean MUTATION = false;
 
 	private static final int SCRIPT_LEN = 3;
 	private static final int MACRO_LEN = 3;
 
 	private Rule[] rule;
 	// CEM固有パラメータ
-	private final int N = 50;			// 個体数
+	private final int N = 100;			// 個体数
 	private final int M;
 	private final double rho = 0.1;	// 選択率
 	private final double alpha = 0.7;	// ステップサイズ
 
-	public static final int K = 10;	// 学習するマクロの数
-	public static final int T = 100;	// トレーニング一回あたりの戦闘数
+	public static final int K = 15;	// 学習するマクロの数
+	public static final int T = 500;	// トレーニング一回あたりの戦闘数
 
 	public static final int BATTLE_COUNT = K * T;
 
 	private int[][] w;
+
+	private EpochRecorder recorder;
 
 	public LearningMacroAction(Rule[] rule) {
 		this.rule = rule;
@@ -38,10 +42,14 @@ public class LearningMacroAction {
 		w = new int[N][M];
 	}
 
+	public void setRecorder(EpochRecorder r) {
+		recorder = r;
+	}
+
 	private List<Macro> L = new LinkedList<Macro>();
 	private int macroCount = 0;
 	private int phase = 0;	// 最初は0
-	private ProbV p;
+	private ProbV p = null;
 
 	private ProbV po = new ProbV(K/2, 1/(K/2.0));	// TODO とりあえずマクロの確率ベクトルは一様分布で
 
@@ -51,7 +59,17 @@ public class LearningMacroAction {
 	public void initLearn() {
 //		phase = macroCount / (K / 2);	// 0 = opening, 1 = midgame
 		phase = 0;
-		p = initProbabilities(M);
+
+		if(MUTATION) {
+			if(p == null)
+				p = initProbabilities(M);
+			else {
+				ProbV c = p.comp();
+				p = initProbabilities(M);
+				p.blend(c, alpha);
+			}
+		} else
+			p = initProbabilities(M);
 
 		S = new MacroScript[T];
 		G = new Record[T];
@@ -59,6 +77,8 @@ public class LearningMacroAction {
 //		macroCount++;
 		trainingCount = 0;
 
+		if(recorder != null)
+			recorder.nextEpoch();
 	}
 
 	public void initActivate() {
@@ -73,6 +93,9 @@ public class LearningMacroAction {
 		s.setF(getFitness(s, record, L));
 		S[trainingCount] = s;
 
+		if(recorder != null)
+			recorder.addLeanerVic(record.A().ht > 0);
+
 		p = updateProbabilities(p, trainingCount + 1, S);	// SとFは0からiまで
 
 //		System.out.println("F : " + s.getF());
@@ -81,11 +104,15 @@ public class LearningMacroAction {
 			Macro M = extractMacro(p);
 			L.add(M);	// リストに新しいマクロを追加する
 
+			if(recorder != null)
+				recorder.setRuleApplicationFreq(ruleFreq(w, this.M, N));
+
 			if(++macroCount < K) {
 				initLearn();
 			} else {
 				SRPG.learnerWinLog += "\n\n---------------\n\n" + L + "\n\n-----------------\n\n";
-				System.out.println("macros : " + L);
+//				if(SRPG.CONSOLE_VIEW)
+//					System.out.println("macros : " + L);
 			}
 		}
 
@@ -119,16 +146,17 @@ public class LearningMacroAction {
 	}
 
 	private Macro extractMacro(ProbV p, int[][] w, int M, int N, int MACRO_LEN) {
-		double[] v = new double[M];
-		for(int j = 0; j < M; j++)
-			for(int i = 0; i < N; i++)
-				v[j] += w[i][j];
-
-		for(int j = 0; j < M; j++)
-			v[j] /= N;
+//		double[] v = new double[M];
+//		for(int j = 0; j < M; j++)
+//			for(int i = 0; i < N; i++)
+//				v[j] += w[i][j];
+//
+//		for(int j = 0; j < M; j++)
+//			v[j] /= N;
+		double[] v = ruleFreq(w, M, N);
 
 		// vは一戦闘あたりに使われる確率
-		System.out.println("v : " + Arrays.toString(v));
+//		System.out.println("v : " + Arrays.toString(v));
 
 		int[] top = new int[MACRO_LEN];
 		for(int rank = 0; rank < MACRO_LEN; rank++) {
@@ -147,9 +175,21 @@ public class LearningMacroAction {
 
 		Macro macro = new Macro(rules.toArray(new Rule[0]));
 
-		System.out.println("extracted macro : \n" + macro);
+//		System.out.println("extracted macro : \n" + macro);
 
 		return macro;
+	}
+
+	private double[] ruleFreq(int[][] w, int M, int N) {
+		double[] v = new double[M];
+		for(int j = 0; j < M; j++)
+			for(int i = 0; i < N; i++)
+				v[j] += w[i][j];
+
+		for(int j = 0; j < M; j++)
+			v[j] /= N;
+
+		return v;
 	}
 
 	private ProbV updateProbabilities(ProbV p, int n, MacroScript[] scriptList) {
@@ -157,9 +197,15 @@ public class LearningMacroAction {
 	}
 	private ProbV updateProbabilities(ProbV p, int n, MacroScript[] scriptList, int N, double rho) {
 		if(n % N == 0) {	// 全個体の更新
-			for(int i = 1; i <= N; i++)
+			for(int i = 1; i <= N; i++) {
 				for(int j = 0; j < M; j++)
 					w[i - 1][j] = scriptList[n - i].firedInPhase(rule[j]) ? 1 : 0;	// 対応するphase中に実行されたかどうか
+
+//				System.out.println(scriptList[n - i]);
+			}
+
+//			for(int i = 0; i < N; i++)
+//				System.out.println(Arrays.toString(w[i]));
 
 			// 適応度に従って直近N個のサンプルをソートする。ベストなのが最初
 			scriptList = sortLast(scriptList, N);
@@ -167,20 +213,40 @@ public class LearningMacroAction {
 			// エリートサンプル内のルールの頻度を計算する
 			ProbV pd = new ProbV(0);	// p' : 新規確率ベクトル
 
+			int[] fired = new int[M];
+			ProbV contain = new ProbV(0);
+
 			for(int j = 0; j < M; j++) {
 				pd.set(j, 0);
 				for(int i = 0; i < Ne; i++) {
 					if(scriptList[i].contains(rule[j])) {
+						if(TEIAN)
+							fired[j] += scriptList[i].firedInPhase(rule[j]) ? 1 : 0;
 						pd.set(j, pd.get(j) + 1);
 					}
 				}
+				if(TEIAN)
+					contain.set(j, pd.get(j));
+
 				pd.set(j, pd.get(j) / Ne);
 			}
+
 			pd.probNor();
 
+//			System.out.println(pd);
+
 			// 確率ベクトルを更新する
-			for(int j = 0; j < M; j++)
-				p.set(j, (1 - alpha)*p.get(j) + alpha*pd.get(j));
+			if(TEIAN) {
+				for(int j = 0; j < p.length(); j++) {
+					// TEIAN アルファ値に実行確率をかけて、実行してなければ変化なし、実行していれば学習
+					double c = fired[j] > 0 ? fired[j] / contain.get(j) : 0;
+					double alpha = this.alpha * c;
+					p.set(j, (1 - alpha)*p.get(j) + alpha*pd.get(j));
+				}
+			} else
+				p.blend(pd, alpha);
+
+			p.probNor();
 
 //			System.out.println("p' : " + pd);
 //			System.out.println("p updated : " + p);
@@ -298,6 +364,10 @@ public class LearningMacroAction {
 				p[i] = d;
 		}
 
+		public ProbV(ProbV pd) {
+			p = Arrays.copyOf(pd.p, pd.length());
+		}
+
 		public int length() {
 			return p.length;
 		}
@@ -317,6 +387,20 @@ public class LearningMacroAction {
 
 			for(int i = 0; i < p.length; i++)
 				p[i] /= sum;
+		}
+
+		public void blend(ProbV pd, double alpha) {
+			for(int j = 0; j < p.length; j++)
+				set(j, (1 - alpha)*get(j) + alpha*pd.get(j));
+		}
+
+		public ProbV comp() {
+			ProbV c = new ProbV(p.length, 0);
+			for(int i = 0; i < c.length(); i++)
+				c.set(i, 1 - p[i]);
+
+			c.probNor();
+			return c;
 		}
 
 //		public ProbV nor() {

@@ -6,21 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
-import com.awesome.game.base.RenderUtil;
 import com.awesome.game.base.Renderer;
 import com.awesome.game.base.Screen;
 import com.awesome.script.dynamic.CDUtils;
 import com.awesome.script.dynamic.DynamicScripting;
-import com.awesome.script.dynamic.RulebaseViewer;
 import com.awesome.script.dynamic.UnitID;
 import com.awesome.script.macro.LearningMacroAction;
 import com.awesome.script.macro.UnitIDLM;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 
 // TODO 中盤マクロで魔力強化スキルが採用されてる
 // TODO 移動可能領域表示、同時にバグも見つかるはず
@@ -44,6 +40,8 @@ public class SRPG implements ApplicationListener {
 
 	static final int FPS = 30;
 
+	private static boolean initial = false;
+
 	private final int Wmax = DynamicScripting.maxweight;
 
 	private static Renderer ren;
@@ -54,16 +52,20 @@ public class SRPG implements ApplicationListener {
 		return ren;
 	}
 
+	public static boolean initial() {
+		return initial;
+	}
+
 	public static String learnerWinLog = "";
 
 	Screen screen;
 
 	private final String ENEMY = "weak";
 
-//	private int battleCount;
-
 	@Override
 	public void create() {
+		initial = true;
+
 		ren = Renderer.getInstance(Gdx.app.getGraphics().getGL10());
 
 		for(UnitID uid : UnitID.values())
@@ -90,29 +92,13 @@ public class SRPG implements ApplicationListener {
 
 	@Override
 	public void render() {
-//		screen.update(Gdx.app);
 		if(VIEW)
 			ren.render(Gdx.gl10);
-//
-//		Screen next = screen.nextScreen();
-//		if(next != screen) {
-//			System.out.println("battle : " + battleCount);
-//			battleCount++;
-//
-////			RulebaseViewer.viewRulebases(false);
-//
-//			if(battleCount == BATTLE)
-//				exit();
-//		}
-//		screen = next;
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		ren.resize(width, height);
-
-//		System.out.println("display mode change : " + Gdx.app.getGraphics().supportsDisplayModeChange());
-//		System.out.println("display modes : " + Arrays.toString(Gdx.app.getGraphics().getDisplayModes()));
 	}
 
 	@Override
@@ -122,8 +108,8 @@ public class SRPG implements ApplicationListener {
 	}
 
 	static void exit() {
-		for(UnitID uid : UnitID.values())
-			uid.saveRulebase();
+//		for(UnitID uid : UnitID.values())
+//			uid.saveRulebase();
 
 		SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
 
@@ -143,61 +129,7 @@ public class SRPG implements ApplicationListener {
 		if(DONE_NOTICE)
 			CDUtils.open("G:\\");
 
-		System.exit(0);
-	}
-
-}
-
-class GameLogic implements Runnable {
-
-	private final float DELTA_MIN;
-
-	private Screen screen;
-
-	public GameLogic() {
-		screen = new BattleScreen();
-
-		DELTA_MIN = 1000.0f/SRPG.FPS;
-	}
-
-	private int battleCount;
-
-	@Override
-	public void run() {
-
-		float delta = 0;
-
-		while(true) {
-			long startTime = System.currentTimeMillis();
-
-			screen.update(delta / 1000);
-
-			Screen next = screen.nextScreen();
-			if(next != screen) {
-				System.out.println("battle : " + battleCount);
-				battleCount++;
-
-				if(battleCount == SRPG.BATTLE)
-					SRPG.exit();
-			}
-			screen = next;
-
-			delta = System.currentTimeMillis() - startTime;
-
-			if(delta < DELTA_MIN) {
-				try {
-					Thread.sleep((long) (DELTA_MIN - delta));
-				} catch (InterruptedException e) {
-					// TODO 自動生成された catch ブロック
-					e.printStackTrace();
-				}
-
-				delta = DELTA_MIN;
-			}
-
-//			System.out.println("delta time : " + (System.currentTimeMillis() - startTime));
-		}
-
+//		System.exit(0);
 	}
 
 }
