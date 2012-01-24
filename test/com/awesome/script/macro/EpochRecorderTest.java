@@ -20,7 +20,7 @@ public class EpochRecorderTest {
 
 		UnitIDLM.useGdx(false);
 		UnitIDLM.WIZ0.load();
-		recorder = new EpochRecorder(100, UnitIDLM.WIZ0, new StaticScript(StaticScript.RULE_WIZARD));
+		recorder = new EpochRecorder(100, UnitIDLM.WIZ0.getLearningMacroAction(), new StaticScript(StaticScript.RULE_WIZARD));
 	}
 
 	@After

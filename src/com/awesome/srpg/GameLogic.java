@@ -43,7 +43,7 @@ public class GameLogic implements Runnable {
 			Screen next = screen.nextScreen();
 			if(next != screen) {
 				if(SRPG.CONSOLE_VIEW)
-				System.out.println("battle : " + battleCount);
+					System.out.println("battle : " + battleCount);
 				battleCount++;
 
 				if(battleCount == BATTLE) {

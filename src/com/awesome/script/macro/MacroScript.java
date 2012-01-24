@@ -83,7 +83,7 @@ class MacroScript implements ActionScript{
 			ruleMap.put(r.getLine(), r);
 		}
 
-		lineSet.add(ConfigedLine.PASS);
+		lineSet.add(new ConfigedLine(ConfigedLine.PASS));
 		lines.addAll(lineSet);
 
 		Collections.sort(lines);

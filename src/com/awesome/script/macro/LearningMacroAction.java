@@ -14,7 +14,7 @@ import com.awesome.srpg.SRPG;
 
 public class LearningMacroAction {
 
-	private static final boolean TEIAN = true;
+	private static final boolean TEIAN1 = false;
 	private static final boolean MUTATION = false;
 
 	private static final int SCRIPT_LEN = 3;
@@ -220,12 +220,12 @@ public class LearningMacroAction {
 				pd.set(j, 0);
 				for(int i = 0; i < Ne; i++) {
 					if(scriptList[i].contains(rule[j])) {
-						if(TEIAN)
+						if(TEIAN1)
 							fired[j] += scriptList[i].firedInPhase(rule[j]) ? 1 : 0;
 						pd.set(j, pd.get(j) + 1);
 					}
 				}
-				if(TEIAN)
+				if(TEIAN1)
 					contain.set(j, pd.get(j));
 
 				pd.set(j, pd.get(j) / Ne);
@@ -236,7 +236,7 @@ public class LearningMacroAction {
 //			System.out.println(pd);
 
 			// 確率ベクトルを更新する
-			if(TEIAN) {
+			if(TEIAN1) {
 				for(int j = 0; j < p.length(); j++) {
 					// TEIAN アルファ値に実行確率をかけて、実行してなければ変化なし、実行していれば学習
 					double c = fired[j] > 0 ? fired[j] / contain.get(j) : 0;

@@ -35,6 +35,8 @@ public class BattleScreen implements Screen {
 
 	Screen nextScreen;
 
+	private EpochRecorder recorder;
+
 	public BattleScreen() {
 
 		nextScreen = this;
@@ -74,6 +76,8 @@ public class BattleScreen implements Screen {
 	public BattleScreen(EpochRecorder recorder) {
 
 		nextScreen = this;
+
+		this.recorder = recorder;
 
 		cells = new StageCell[LINES][LINES];
 		for(int x = 0; x < cells.length; x++)
@@ -127,7 +131,10 @@ public class BattleScreen implements Screen {
 	public Screen nextScreen() {
 		if(manager.isDone()) {
 			dispose();
-			nextScreen = new BattleScreen();
+			if(recorder == null)
+				nextScreen = new BattleScreen();
+			else
+				nextScreen = new BattleScreen(recorder);
 		}
 		return nextScreen;
 	}

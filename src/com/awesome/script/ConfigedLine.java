@@ -15,7 +15,7 @@ public class ConfigedLine implements Line {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static final Line
+	public static final ConfigedLine
 	PASS = new ConfigedLine(-1, new Condition.Always(), new Target[] {Target.CLOSEST}, Skill.PASS, 0),
 	DIRECT_ATTACK_CLOSEST_ENEMY = 		new ConfigedLine(0, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST}, 					Skill.NORMAL, 0.1),
 	DIRECT_ATTACK_WEAKEST_ENEMY = 		new ConfigedLine(1, new Condition.Always(), new Target[] {Target.ENEMY, Target.WAKEST, Target.CLOSEST},	Skill.NORMAL, 0.5),

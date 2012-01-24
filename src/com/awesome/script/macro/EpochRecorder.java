@@ -12,13 +12,13 @@ public class EpochRecorder {
 
 	private final int N;
 
-	private UnitIDLM learner;
+	private LearningMacroAction learner;
 
 	private ActionScript stat;
 
 	private Deque<Epoch> epochs;
 
-	public EpochRecorder(int N, UnitIDLM learner, ActionScript stat) {
+	public EpochRecorder(int N, LearningMacroAction learner, ActionScript stat) {
 		super();
 		this.N = N;
 
@@ -29,7 +29,8 @@ public class EpochRecorder {
 
 		nextEpoch();
 
-		LearningMacroAction lma = learner.getLearningMacroAction();
+//		LearningMacroAction lma = learner.getLearningMacroAction();
+		LearningMacroAction lma = learner;
 		lma.setRecorder(this);
 	}
 
@@ -37,7 +38,7 @@ public class EpochRecorder {
 //		return N;
 //	}
 
-	public UnitIDLM getLearner() {
+	public LearningMacroAction getLearner() {
 		return learner;
 	}
 

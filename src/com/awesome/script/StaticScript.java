@@ -24,6 +24,15 @@ public class StaticScript implements ActionScript {
 		Arrays.sort(rules);
 	}
 
+	public StaticScript(StaticScript script) {
+		Line[] rs = new Line[script.rules.length];
+		for(int i = 0; i < script.rules.length; i++) {
+			rs[i] = new ConfigedLine((ConfigedLine)script.rules[i]);
+		}
+
+		rules = rs;
+	}
+
 	@Override
 	public Line selectRule(Unit actor, List<Unit> units, Unit[][] UnitMap) {
 		for(Line r : rules) {

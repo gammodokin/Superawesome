@@ -13,9 +13,19 @@ public class LearnMacroOp extends ScriptOperator {
 
 
 	public LearnMacroOp(UnitIDLM unitId) {
+//		super(null);
+		this(unitId.getLearningMacroAction());
+
+//		this.lma = unitId.getLearningMacroAction();
+//		lma.initActivate();
+//		script = lma.generateScript();
+//		setScript(script);
+	}
+
+	public LearnMacroOp(LearningMacroAction lma) {
 		super(null);
 
-		this.lma = unitId.getLearningMacroAction();
+		this.lma = lma;
 		lma.initActivate();
 		script = lma.generateScript();
 		setScript(script);

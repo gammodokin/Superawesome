@@ -84,9 +84,7 @@ public class ScriptOperator implements UnitOperator {
 			}
 
 		}
-//		int minDist = Integer.MAX_VALUE;
-//		int minDistX = -1;
-//		int minDistY = -1;
+
 		DistPoint closestT = new DistPoint(Integer.MAX_VALUE, -1, -1);
 		DistPoint closestA = new DistPoint(Integer.MAX_VALUE, -1, -1);
 
@@ -126,30 +124,9 @@ public class ScriptOperator implements UnitOperator {
 				// ˆÚ“®ƒ‹[ƒg‚Ì’†‚ÅË’ö‚É“ü‚é‚Ü‚Å‚Å‚«‚é‚¾‚¯i‚Ş
 				cs = ms.getWay(closestA.x, closestA.y);
 				Coord<Integer> c = cs.length < status.getMov() ? cs[cs.length - 1] : cs[status.getMov() - 1];
-				////			MapSearch tms = new MapSearch(unitMap.length, unitMap[0].length);
-				//			for(int i = 0; i < cs.length && i < status.getMov(); i++) {
-				////				tms.setCurrentPos(cs[i]);
-				//				int d = MapSearch.distanse(rule.getTargetX(), rule.getTargetY(), cs[i].x, cs[i].y);
-				//				// Ë’ö‚É“ü‚é‚È‚ç
-				//				if(rule.getSkill().getRange().max <= d)
-				////				if(tms.search(rule.getSkill().getRange(), null))
-				//					c = cs[i];
-				//			}
 				closestT.x = c.x;
 				closestT.y = c.y;
 			}
-
-//			for(MapSearch.Coord<Integer> coord : ms.getWay(minDistX, minDistY)) {
-//				if(!ms.search(coord.x, coord.y, status.getMov(), Integer.MAX_VALUE))
-//					continue;
-//
-//				int d = MapSearch.distanse(rule.getTargetX(), rule.getTargetY(), coord.x, coord.y);
-//				if(d < moveMinDist) {
-//					moveMinDist = d;
-//					moveMinDistX = coord.x;
-//					moveMinDistY = coord.y;
-//				}
-//			}
 		}
 
 		int cx, cy;
