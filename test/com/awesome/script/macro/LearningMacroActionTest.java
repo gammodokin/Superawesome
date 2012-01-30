@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.After;
@@ -93,18 +92,33 @@ public class LearningMacroActionTest {
 		ProbV p = lma.new ProbV(SOLDIER.length, 0);
 		int[][] w = new int[][] {
 				{0, 1, 0, 0, 1},
-				{0, 1, 1, 0, 0},
-				{0, 0, 1, 0, 0},
+				{0, 1, 1, 0, 1},
+				{0, 1, 0, 0, 0},
+				{1, 0, 0, 0, 0},
 				{0, 1, 0, 0, 1},
-				{1, 1, 1, 0, 1},
 				{1, 1, 1, 0, 0},
 		};
 
-		Macro m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 3);
-		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[2], SOLDIER[4]}));
+		Macro m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 3, false);
+		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[4], SOLDIER[0]}));
 
-		m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 4);
-		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[2], SOLDIER[4], SOLDIER[0]}));
+		m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 4, false);
+		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[4], SOLDIER[0], SOLDIER[2]}));
+
+		m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 4, true);
+		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[4], SOLDIER[2], SOLDIER[0]}));
+
+		w = new int[][] {
+				{0, 1, 0, 0, 1},
+				{0, 1, 0, 0, 1},
+				{0, 1, 1, 0, 0},
+				{1, 0, 1, 0, 0},
+				{0, 1, 0, 0, 1},
+				{1, 1, 1, 0, 0},
+		};
+
+		m = pa.method(lma, "extractMacro", p, w, SOLDIER.length, w.length, 4, true);
+		assertEquals(m.getRules(), Arrays.asList(new Rule[]{SOLDIER[1], SOLDIER[4], SOLDIER[2], SOLDIER[0]}));
 	}
 
 	@Test
@@ -279,14 +293,35 @@ public class LearningMacroActionTest {
 		assertEquals(fdiv, 0, 0.001);
 	}
 
-	@Test
-	public void testEval() {
-		fail("‚Ü‚¾ŽÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
-	}
+//	@Test
+//	public void testEval() {
+//		fail("‚Ü‚¾ŽÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+//	}
+//
+//	@Test
+//	public void testGenerateScript() {
+//		fail("‚Ü‚¾ŽÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+//	}
 
 	@Test
-	public void testGenerateScript() {
-		fail("‚Ü‚¾ŽÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+	public void testCollocationRate() {
+		LearningMacroAction lma = new LearningMacroAction(SOLDIER);
+		int[][] w = new int[][] {
+				{0, 1, 0, 0, 1},
+				{0, 1, 1, 0, 0},
+				{0, 0, 1, 0, 0},
+				{0, 1, 0, 0, 1},
+				{1, 1, 1, 0, 1},
+				{1, 1, 1, 0, 0},
+		};
+
+		double[][] col = pa.method(lma, "collocationRate", (Object)w);
+		assertEquals(col[1][4], 0.6, 0.01); // 3 / (5 + 3 - 3)
+		assertEquals(col[4][1], 0.6, 0.01);
+
+		assertEquals(col[2][3], 0, 0.01); // 0 / (4 + 0 - 0)
+
+		assertEquals(col[0][0], 1.0, 0.01);
 	}
 
 	class SimpleMS extends MacroScript {

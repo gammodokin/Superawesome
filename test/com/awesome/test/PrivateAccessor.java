@@ -13,14 +13,9 @@ import java.util.Set;
 
 public class PrivateAccessor {
 
-	private Map<Class<?>, Class<?>> unboxing;
+	private static Map<Class<?>, Class<?>> unboxing;
 
-	private Map<String, Field> fields;
-
-	private Map<String, Map<List<Class<?>>, Method>> methods;
-
-	public <T> PrivateAccessor(Class<T> clas) {
-
+	static {
 		unboxing = new HashMap<Class<?>, Class<?>>();
 		unboxing.put(Boolean.class, boolean.class);
 		unboxing.put(Byte.class, byte.class);
@@ -31,6 +26,14 @@ public class PrivateAccessor {
 		unboxing.put(Float.class, float.class);
 		unboxing.put(Double.class, double.class);
 		unboxing.put(Void.class, void.class);
+	}
+
+	private Map<String, Field> fields;
+
+	private Map<String, Map<List<Class<?>>, Method>> methods;
+
+	public <T> PrivateAccessor(Class<T> clas) {
+
 
 		fields = new HashMap<String, Field>();
 		for(Field f : clas.getDeclaredFields()) {
@@ -52,8 +55,7 @@ public class PrivateAccessor {
 		Field field = fields.get(n);
 		F f = null;
 		try {
-			Object o = field.get(c);
-			f = o == null ? null : (F)o;
+			f = (F)field.get(c);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -61,6 +63,10 @@ public class PrivateAccessor {
 		}
 
 		return f;
+	}
+
+	public <C, M> M method(C c, String n) {
+		return method(c, n, (Object[])null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,19 +77,28 @@ public class PrivateAccessor {
 		} else {
 			cs = new ArrayList<Class<?>>(args.length);
 			for(Object o : args)
-				cs.add(o.getClass());
+				if(o == null)
+					cs.add(null);
+				else
+					cs.add(o.getClass());
 		}
 
 		List<Class<?>> matchParams = null;
 		Map<List<Class<?>>,Method> map = methods.get(n);
 		Set<List<Class<?>>> keySet = map.keySet();
+
 		for(List<Class<?>> params : keySet) {
 			boolean match = true;
 			Iterator<Class<?>> argitr = cs.iterator();
 			Iterator<Class<?>> prmitr = params.iterator();
+
 			while(prmitr.hasNext() && argitr.hasNext()) {
 				Class<?> argc = argitr.next();
 				Class<?> prmc = prmitr.next();
+
+				if(argc == null)
+					continue;
+
 				if(prmc.isPrimitive())
 					if(unboxing.containsKey(argc))
 						argc = unboxing.get(argc);

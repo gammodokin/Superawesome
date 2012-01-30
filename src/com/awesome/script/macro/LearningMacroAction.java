@@ -14,6 +14,9 @@ import com.awesome.srpg.SRPG;
 
 public class LearningMacroAction {
 
+	private static final boolean TEIAN22 = true;
+	private static final boolean TEIAN21 = false;
+	private static final boolean TEIAN2 = true;
 	private static final boolean TEIAN1 = false;
 	private static final boolean MUTATION = false;
 
@@ -93,8 +96,8 @@ public class LearningMacroAction {
 		s.setF(getFitness(s, record, L));
 		S[trainingCount] = s;
 
-		if(recorder != null)
-			recorder.addLeanerVic(record.A().ht > 0);
+//		if(recorder != null)
+//			recorder.addLearnerVic(record.A().ht > 0);
 
 		p = updateProbabilities(p, trainingCount + 1, S);	// SとFは0からiまで
 
@@ -104,13 +107,24 @@ public class LearningMacroAction {
 			Macro M = extractMacro(p);
 			L.add(M);	// リストに新しいマクロを追加する
 
-			if(recorder != null)
+			if(recorder != null) {
 				recorder.setRuleApplicationFreq(ruleFreq(w, this.M, N));
+				StringBuilder sb = new StringBuilder();
+				sb.append("teian : " + TEIAN2);
+				sb.append("\nteian2 : " + TEIAN21);
+				sb.append("\nteian3 : " + TEIAN22);
+//				for(int i = 0; i < 100; i++)
+//					sb.append(S[S.length - 1 - i]);
+				sb.append("\n" + M + "\n");
+				recorder.setLog(sb.toString());
+
+				recorder.setMacro(M.getRules().toArray(new Rule[0]));
+			}
 
 			if(++macroCount < K) {
 				initLearn();
 			} else {
-				SRPG.learnerWinLog += "\n\n---------------\n\n" + L + "\n\n-----------------\n\n";
+//				SRPG.learnerWinLog += "\n\n---------------\n\n" + L + "\n\n-----------------\n\n";
 //				if(SRPG.CONSOLE_VIEW)
 //					System.out.println("macros : " + L);
 			}
@@ -118,55 +132,48 @@ public class LearningMacroAction {
 
 	}
 
-//	void listing1() {
-//		List<Macro> L = new LinkedList<Macro>();
-//
-//		for(int k = 0; k < K; k++) {
-//			int phase = k / (K / 2);	// 0 = opening, 1 = midgame
-//			ProbV p = initProbabilities();
-//
-//			Script[] S = new Script[T];
-//			BattleRecord[] G = new BattleRecord[T];
-////			double[] F = new double[T];
-//			for(int i = 0; i < T; i++) {
-//				// pに従ってランダムなスクリプトを引く
-//				S[i] = generateScript(p, phase);
-//				// S[i]を使って戦闘して、ゲームの記録を取る
-//				G[i] = evaluateScript(S[i]);
-//				// スクリプトの適応度を計算する
-//				S[i].setF(getFitness(S[i], G[i], L));
-//				p = updateProbabilities(p, i, S);	// SとFは0からiまで
-//			}
-//			Macro M = extractMacro(p);
-//			L.add(M);	// リストに新しいマクロを追加する
-//		}
-//	}
 	private Macro extractMacro(ProbV p) {
-		return extractMacro(p, w, M, N, MACRO_LEN);
+		return extractMacro(p, w, M, N, MACRO_LEN, TEIAN2);
 	}
 
-	private Macro extractMacro(ProbV p, int[][] w, int M, int N, int MACRO_LEN) {
-//		double[] v = new double[M];
-//		for(int j = 0; j < M; j++)
-//			for(int i = 0; i < N; i++)
-//				v[j] += w[i][j];
-//
-//		for(int j = 0; j < M; j++)
-//			v[j] /= N;
+	private Macro extractMacro(ProbV p, int[][] w, int M, int N, int MACRO_LEN, boolean collocation) {
 		double[] v = ruleFreq(w, M, N);
+
+		double[][] col = null;
+		if(collocation)
+			col = collocationRate(w);
 
 		// vは一戦闘あたりに使われる確率
 //		System.out.println("v : " + Arrays.toString(v));
 
 		int[] top = new int[MACRO_LEN];
 		for(int rank = 0; rank < MACRO_LEN; rank++) {
-			double largest = Integer.MIN_VALUE;
-			for(int j = 0; j < M; j++)
-				if(v[j] > largest) {
-					largest = v[j];
+			double largest = -Double.MAX_VALUE;
+			for(int j = 0; j < M; j++) {
+				double e = v[j];
+
+				if(collocation) {
+					if(rank > 0) {
+
+						if(TEIAN21 && e >= 0)
+							e = 1;
+
+						double c = rankCol(rank, top, col, j);
+
+						if(TEIAN22) {
+							if(c > 0)
+								e = e * c + 1; // col[top[0]][j];
+						} else
+							e *= c;
+					}
+				}
+
+				if(e > largest) {
+					largest = e;
 					top[rank] = j;
 				}
-			v[top[rank]] = -1;	// これ以降選ばれないため
+			}
+			v[top[rank]] = -Double.MAX_VALUE;	// これ以降選ばれないため
 		}
 
 		List<Rule> rules = new ArrayList<Rule>(MACRO_LEN);
@@ -174,8 +181,6 @@ public class LearningMacroAction {
 			rules.add(rule[i]);
 
 		Macro macro = new Macro(rules.toArray(new Rule[0]));
-
-//		System.out.println("extracted macro : \n" + macro);
 
 		return macro;
 	}
@@ -190,6 +195,14 @@ public class LearningMacroAction {
 			v[j] /= N;
 
 		return v;
+	}
+
+	private double rankCol(int fixed, int[] top, double[][] col, int rule) {
+		double c = 1;
+		for(int i = 0; i < fixed; i++)
+			c *= col[top[i]][rule];
+
+		return c;
 	}
 
 	private ProbV updateProbabilities(ProbV p, int n, MacroScript[] scriptList) {
@@ -403,25 +416,6 @@ public class LearningMacroAction {
 			return c;
 		}
 
-//		public ProbV nor() {
-//			double len = len();
-//			for(int i = 0; i < p.length; i++)
-//				p[i] /= len;
-//
-//			return this;
-//		}
-//
-//		double len2() {
-//			double sum = 0;
-//			for(double d : p)
-//				sum += d * d;
-//			return sum;
-//		}
-//
-//		double len() {
-//			return Math.sqrt(len2());
-//		}
-
 		@Override
 		public String toString() {
 			return Arrays.toString(p);
@@ -485,8 +479,37 @@ public class LearningMacroAction {
 		return rule;
 	}
 
-//	class Rule {
-//
-//	}
+	private double[][] collocationRate(int[][] w) {
+		double[][] rate = new double[rule.length][rule.length];
+
+		for(int j = 0; j < rule.length; j++) {
+			int A = containRule(w, j);
+			for(int k = j; k < rule.length; k++) {
+				int B = containRule(w, k);
+				int C = containColl(w, j, k);
+
+				rate[j][k] = (double)C / (A + B - C);
+				rate[k][j] = rate[j][k];
+			}
+		}
+
+		return rate;
+	}
+
+	private int containRule(int[][] w, int j) {
+		int sum = 0;
+		for(int i = 0; i < w.length; i++)
+			sum += w[i][j];
+
+		return sum;
+	}
+
+	private int containColl(int[][] w, int j, int k) {
+		int sum = 0;
+		for(int i = 0; i < w.length; i++) {
+			sum += w[i][j] * w[i][k] > 0 ? 1 : 0;
+		}
+		return sum;
+	}
 
 }

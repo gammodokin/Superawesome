@@ -89,19 +89,19 @@ public enum UnitIDLM {
 	public void saveRulebase() {
 //		for(int i = 0; i < ds.length; i++) {
 //			Rule[] rulebase = ds[i].getRulebase();
-			ObjectOutputStream oos = null;
-			try {
-				oos = new ObjectOutputStream(new FileOutputStream(PATH + fileName));
-				oos.writeObject(lma.getRulebase());
-			} catch(IOException ie){
-				ie.printStackTrace();
-			} finally {
-				try {
-					oos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+//			ObjectOutputStream oos = null;
+//			try {
+//				oos = new ObjectOutputStream(new FileOutputStream(PATH + fileName));
+//				oos.writeObject(lma.getRulebase());
+//			} catch(IOException ie){
+//				ie.printStackTrace();
+//			} finally {
+//				try {
+//					oos.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
 //		}
 	}
 }

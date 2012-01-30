@@ -40,9 +40,9 @@ public class PrivateAccessorTest {
 	@Test
 	public void testMethod() {
 		TestClass tc = new TestClass();
-		assertEquals(pa.method(tc, "method0", null), null);
-		assertEquals(pa.method(tc, "method1", null), METHOD1);
-//		assertEquals(pa.method(tc, "method2", null), METHOD2 + 1 + null);	// 引数にnullは無理
+		assertEquals(pa.method(tc, "method0"), null);
+		assertEquals(pa.method(tc, "method1", (Object[])null), METHOD1);
+		assertEquals(pa.method(tc, "method2", (Object)null), METHOD2 + 1 + null);	// 引数にnullは一応できるが、複数マッチする場合はどれになるかわかりません＼(^o^)／
 		assertEquals(pa.method(tc, "method2", METHOD2), METHOD2 + 1 + METHOD2);
 		assertEquals(pa.method(tc, "method2", I), METHOD2 + 2 + I);
 

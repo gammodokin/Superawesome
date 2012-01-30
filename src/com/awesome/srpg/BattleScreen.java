@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.awesome.game.base.Actor;
 import com.awesome.game.base.Screen;
+import com.awesome.script.Recorder;
 import com.awesome.script.StaticScript;
 import com.awesome.script.macro.EpochRecorder;
 import com.awesome.script.macro.LearnMacroOp;
 import com.awesome.script.macro.UnitIDLM;
 import com.awesome.srpg.logic.StageCell;
+import com.awesome.srpg.logic.UnitCorner;
 import com.awesome.srpg.logic.UnitManager;
 import com.awesome.srpg.logic.UnitStatus;
 import com.awesome.srpg.object.Stage;
@@ -35,7 +37,7 @@ public class BattleScreen implements Screen {
 
 	Screen nextScreen;
 
-	private EpochRecorder recorder;
+	private Recorder recorder;
 
 	public BattleScreen() {
 
@@ -73,7 +75,7 @@ public class BattleScreen implements Screen {
 //		manager.addUnit(new Unit(this, stage, LINES-2, LINES-1, UnitStatus.createEnemyMagician(), new ScriptOperator(new StaticScript(StaticScript.RULE_WIZARD)), r*0));
 	}
 
-	public BattleScreen(EpochRecorder recorder) {
+	public BattleScreen(Recorder recorder) {
 
 		nextScreen = this;
 
@@ -92,9 +94,9 @@ public class BattleScreen implements Screen {
 		cursor = new UnitCursor(this, stage.SPAN);
 
 		double r = 12.5;
-		manager.addUnit(new Unit(this, stage, 0, 0, UnitStatus.createOwnMagician(), new LearnMacroOp(recorder.getLearner()), r*0));
+		manager.addUnit(new Unit(this, stage, 0, 0, UnitStatus.createOwnMagician(), recorder.getLearnerOp(), r*0));
 
-		manager.addUnit(new Unit(this, stage, LINES-1, LINES-1, UnitStatus.createEnemyMagician(), new ScriptOperator(recorder.getStat()), r*0));
+		manager.addUnit(new Unit(this, stage, LINES-1, LINES-1, UnitStatus.createEnemyMagician(), recorder.getStatOp(), r*0));
 	}
 
 	@Override
@@ -130,6 +132,8 @@ public class BattleScreen implements Screen {
 	@Override
 	public Screen nextScreen() {
 		if(manager.isDone()) {
+			recorder.addLearnerVic(manager.wonCorder().equals(UnitCorner.LEARNER));
+
 			dispose();
 			if(recorder == null)
 				nextScreen = new BattleScreen();

@@ -7,8 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.awesome.script.ActionScript;
+import com.awesome.script.ConfigedLine;
+import com.awesome.script.Line;
+import com.awesome.script.Recorder;
+import com.awesome.script.dynamic.Rule;
+import com.awesome.srpg.operation.ScriptOperator;
 
-public class EpochRecorder {
+public class EpochRecorder implements Recorder {
 
 	private final int N;
 
@@ -38,24 +43,32 @@ public class EpochRecorder {
 //		return N;
 //	}
 
-	public LearningMacroAction getLearner() {
-		return learner;
+	public ScriptOperator getLearnerOp() {
+		return new LearnMacroOp(learner);
 	}
 
-	public ActionScript getStat() {
-		return stat;
+	public ScriptOperator getStatOp() {
+		return new ScriptOperator(stat);
 	}
 
 	public void nextEpoch() {
 		epochs.add(new Epoch());
 	}
 
-	public void addLeanerVic(boolean b) {
+	public void addLearnerVic(boolean b) {
 		epochs.getLast().addLVic(b);
 	}
 
 	public void setRuleApplicationFreq(double[] p) {
 		epochs.getLast().setRuleFreq(p);
+	}
+
+	public void setLog(String str) {
+		epochs.getLast().setLog(str);
+	}
+
+	public void setMacro(Rule[] m) {
+		epochs.getLast().setMacro(m);
 	}
 
 	public double aveTurningPoint() {
@@ -90,26 +103,52 @@ public class EpochRecorder {
 		return d;
 	}
 
-//	public void addW(int[][] w) {
-//		List<List<Integer>> ruleList = new ArrayList<List<Integer>>(w.length);
-//		wLog.add(ruleList);
+	// DOING ‹¤‹N•p“x‚ð•]‰¿‚·‚é
+//	public double collocation() {
 //
-//		for(int i = 0; i < w.length; i++) {
-//			ArrayList<Integer> applys = new ArrayList<Integer>(w[i].length);
-//			ruleList.add(applys);
-//			for(int j = 0; j < w[i].length; j++) {
-//				applys.add(w[i][j]);
-//			}
-//		}
 //	}
+
+	public String collectLog() {
+		StringBuilder sb = new StringBuilder();
+		for(Epoch e : epochs) {
+			sb.append("\n------------------------------\n");
+			sb.append(e.getLog());
+			sb.append("turning point : " + e.turningPoint() + "\n");
+		}
+		sb.append("\n---------------ave---------------\n");
+		sb.append("turning point : " + aveTurningPoint() + "\n");
+		sb.append("D = " + distances());
+
+		return sb.toString();
+	}
+
+	public List<Line[]> collectMacro() {
+		ArrayList<Line[]> ms = new ArrayList<Line[]>(epochs.size());
+		for(Epoch e : epochs) {
+			List<Line> ls = new LinkedList<Line>();
+			for(Rule r : e.getMacro())
+				ls.add(r.getLine());
+
+			ls.add(ConfigedLine.PASS);
+			ms.add(ls.toArray(new Line[0]));
+		}
+
+		return ms;
+	}
 
 }
 
 class Epoch {
 
+	private static final int DEF_TP = 500;
+
 	private List<Boolean> lVicLog = new ArrayList<Boolean>(500);
 
 	private double[] p;
+
+	private String log;
+
+	private Rule[] macro;
 
 	void addLVic(boolean b) {
 		lVicLog.add(b);
@@ -120,7 +159,7 @@ class Epoch {
 	}
 
 	int turningPoint() {
-		int point = -1;
+		int point = DEF_TP;
 		for(int i = 9; i < lVicLog.size(); i++) {
 			if(last10Ave(i) >= 0.5) {
 				point = i;
@@ -143,6 +182,22 @@ class Epoch {
 
 	double[] getRuleFreq() {
 		return p;
+	}
+
+	void setLog(String str) {
+		log = str;
+	}
+
+	String getLog() {
+		return log;
+	}
+
+	void setMacro(Rule[] m) {
+		macro = m;
+	}
+
+	Rule[] getMacro() {
+		return macro;
 	}
 
 }

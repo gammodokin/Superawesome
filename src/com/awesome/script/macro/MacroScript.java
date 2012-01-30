@@ -19,7 +19,7 @@ import com.awesome.srpg.object.Unit;
 
 class MacroScript implements ActionScript{
 
-	private static final int OPENING_TURN = 3;
+	private static final int OPENING_TURN = Integer.MAX_VALUE;
 
 	//		private DynamicScript ds;
 	private Macro opening = null;

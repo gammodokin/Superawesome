@@ -30,6 +30,8 @@ public class UnitManager {
 
 	private boolean isDone = false;
 
+	private UnitCorner wonCorner;
+
 	public UnitManager(StageCell[][] cells) {
 		this.cells = cells;
 		unitMap = new Unit[cells.length][cells[0].length];
@@ -55,6 +57,10 @@ public class UnitManager {
 
 	public boolean isDone() {
 		return isDone;
+	}
+
+	public UnitCorner wonCorder() {
+		return wonCorner;
 	}
 
 	private Queue<Unit> activatedUnits = new LinkedList<Unit>();
@@ -158,56 +164,11 @@ public class UnitManager {
 		for(Unit u : allUnits)
 			u.getOperater().destruct(result);
 
+		wonCorner = corner;
 		if(SRPG.CONSOLE_VIEW)
 			System.out.println("Win !! : " + corner + "\n");
 		return true;
 	}
-
-	/*
-	private void doAction(List<Unit> actorList, boolean update) {
-		List<Unit> actorListClone = new LinkedList<Unit>(actorList);
-		List<Unit> unitListClone = new LinkedList<Unit>(unitList);
-
-		for(Unit unit : actorListClone) {
-			if(unit.isDead())
-				continue;
-
-			if(update)
-				unit.turnUpdate();
-
-			if(unit.isStandby()) {
-				//				unitActivated = true;
-				if(update)
-					activatedUnits.add(unit);
-				else
-					activatedUnits.remove(unit);
-
-				if(SRPG.CONSOLE_VIEW)
-					System.out.println("\n" + unit + " Standby.");
-
-				UnitOperator op = unit.getOperater();
-				op.updateEnvironment(unit, unitList, unitMap);
-
-				MoveOperation mop = op.operateMove();
-				AttackOperation aop = op.operateAttack();
-
-				move(unit, mop.getTargetX(), mop.getTargetY(), mop.getPath());
-
-				attack(unit, aop.getSkill(), aop.getTargetX(), aop.getTargetY());
-
-				//				checkDeath(unit);
-				for(Unit u : unitListClone)
-					checkDeath(u);
-
-				for(UnitCorner c : UnitCorner.values())
-					if(isGameSet(c)) {
-						isDone = true;
-						return;
-					}
-			}
-		}
-	}
-	/*
 
 	/*
 	 * ê‚ëŒç¿ïW

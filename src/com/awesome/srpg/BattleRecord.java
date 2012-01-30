@@ -48,7 +48,7 @@ public class BattleRecord {
 
 		//		boolean won = wonUnits.contains(u);
 
-		SRPG.learnerWinLog += (wonCorner == UnitCorner.LEARNER ? 1 : 0) + "\n";
+//		SRPG.learnerWinLog += (wonCorner == UnitCorner.LEARNER ? 1 : 0) + "\n";
 	}
 
 	public Team getLearnTeam() { return learnTeam; }

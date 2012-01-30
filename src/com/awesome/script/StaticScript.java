@@ -25,12 +25,8 @@ public class StaticScript implements ActionScript {
 	}
 
 	public StaticScript(StaticScript script) {
-		Line[] rs = new Line[script.rules.length];
-		for(int i = 0; i < script.rules.length; i++) {
-			rs[i] = new ConfigedLine((ConfigedLine)script.rules[i]);
-		}
-
-		rules = rs;
+		rules = copyLines(script.rules);
+		Arrays.sort(rules);
 	}
 
 	@Override
@@ -43,6 +39,19 @@ public class StaticScript implements ActionScript {
 		// ‚±‚±‚É‚Í“ž’B‚µ‚È‚¢‚Í‚¸
 		assert false;
 		return null;
+	}
+
+	public static Line[] copyLines(Line[] lines) {
+		Line[] rs = new Line[lines.length];
+		for(int i = 0; i < lines.length; i++) {
+			rs[i] = new ConfigedLine((ConfigedLine)lines[i]);
+		}
+
+		return rs;
+	}
+
+	public Line[] getLines() {
+		return rules;
 	}
 
 }

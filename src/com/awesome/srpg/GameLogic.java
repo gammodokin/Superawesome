@@ -1,6 +1,7 @@
 package com.awesome.srpg;
 
 import com.awesome.game.base.Screen;
+import com.awesome.script.Recorder;
 import com.awesome.script.macro.EpochRecorder;
 
 public class GameLogic implements Runnable {
@@ -11,7 +12,7 @@ public class GameLogic implements Runnable {
 
 	private Screen screen;
 
-	private EpochRecorder recorder;
+	private Recorder recorder;
 
 	public GameLogic() {
 		screen = new BattleScreen();
@@ -20,7 +21,7 @@ public class GameLogic implements Runnable {
 		BATTLE = SRPG.BATTLE;
 	}
 
-	public GameLogic(float delta, int battle, EpochRecorder recorder) {
+	public GameLogic(float delta, int battle, Recorder recorder) {
 		screen = new BattleScreen(recorder);
 
 		DELTA_MIN = delta;

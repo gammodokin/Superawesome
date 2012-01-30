@@ -24,7 +24,7 @@ public class ConfigedLine implements Line {
 	DIRECT_ATTACK_WEAKEST_SOLDIER = 	new ConfigedLine(4, new Condition.Always(), new Target[] {Target.ENEMY, Target.SOLDIER, Target.WAKEST, Target.CLOSEST}, Skill.NORMAL, 1),
 	DIRECT_ATTACK_WEAKEST_WIZARD = 		new ConfigedLine(5, new Condition.Always(), new Target[] {Target.ENEMY, Target.WIZARD, Target.WAKEST, Target.CLOSEST}, Skill.NORMAL, 1.2),
 	TACKLE_CLOSEST_ENEMY = 				new ConfigedLine(6, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST},					Skill.TACKLE, 1.3),
-	MAGICAL_SMASH_CLOSEST_ENEMY = 		new ConfigedLine(7, new Condition.IsStatus(UnusualStatus.INTENCE_STR),	new Target[] {Target.ENEMY, Target.CLOSEST}, Skill.MAGICAL_SMASH, 1.4),
+	MAGICAL_SMASH_CLOSEST_ENEMY = 		new ConfigedLine(7, new Condition.IsStatus(UnusualStatus.INTENCE_STR),	new Target[] {Target.ENEMY, Target.CLOSEST}, Skill.MAGICAL_SMASH, 1.9),
 
 	MAGIC_ATTACK_CLOSEST_ENEMY = 		new ConfigedLine(50, new Condition.Always(), new Target[] {Target.ENEMY, Target.CLOSEST},	Skill.FIRE, 1),
 	MAGIC_ATTACK_WEAKEST_ENEMY = 		new ConfigedLine(51, new Condition.Always(), new Target[] {Target.ENEMY, Target.WAKEST, Target.CLOSEST},	Skill.FIRE, 1.5),
