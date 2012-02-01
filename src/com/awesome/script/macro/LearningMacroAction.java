@@ -14,9 +14,9 @@ import com.awesome.srpg.SRPG;
 
 public class LearningMacroAction {
 
-	private static final boolean TEIAN22 = true;
-	private static final boolean TEIAN21 = false;
-	private static final boolean TEIAN2 = true;
+	public static boolean TEIAN22 = false;
+	public static boolean TEIAN21 = false;
+	public static boolean TEIAN2 = false;
 	private static final boolean TEIAN1 = false;
 	private static final boolean MUTATION = false;
 
@@ -110,9 +110,9 @@ public class LearningMacroAction {
 			if(recorder != null) {
 				recorder.setRuleApplicationFreq(ruleFreq(w, this.M, N));
 				StringBuilder sb = new StringBuilder();
-				sb.append("teian : " + TEIAN2);
-				sb.append("\nteian2 : " + TEIAN21);
-				sb.append("\nteian3 : " + TEIAN22);
+//				sb.append("teian : " + TEIAN2);
+//				sb.append("\nteian2 : " + TEIAN21);
+//				sb.append("\nteian3 : " + TEIAN22);
 //				for(int i = 0; i < 100; i++)
 //					sb.append(S[S.length - 1 - i]);
 				sb.append("\n" + M + "\n");

@@ -19,12 +19,36 @@ import com.awesome.srpg.GameLogic;
 public class PerfomMeasure {
 
 	class Num {
-		static final int RUN = 50;
+		static final int RUN = 100;
 		static final int BATTLE = LearningMacroAction.BATTLE_COUNT;
 		static final int WON_RECORD = 100;
 	}
 
 	public static void main(String... args) {
+
+		String modeName;
+
+		switch(Integer.parseInt(args[0])) {
+		case 0 :
+			modeName = "0êÊçs";
+			break;
+		case 1 :
+			modeName = "1Ç®Ç‡Ç¢Ç¬Ç´";
+			LearningMacroAction.TEIAN2 = true;
+			break;
+		case 2 :
+			modeName = "2ïpìxÇ¢ÇÁÇÀ";
+			LearningMacroAction.TEIAN2 = true;
+			LearningMacroAction.TEIAN21 = true;
+			break;
+		case 3 :
+			modeName = "3ã§ãN0ÇÃÇ∆Ç´";
+			LearningMacroAction.TEIAN2 = true;
+			LearningMacroAction.TEIAN22 = true;
+			break;
+		default :
+			throw new IllegalArgumentException("argument : \" " + args[0] + " \" must be integer in [0, 3].");
+		}
 
 		UnitIDLM.useGdx(false);
 		UnitIDLM.WIZ0.load();
@@ -34,7 +58,7 @@ public class PerfomMeasure {
 		List<Thread> ths = new LinkedList<Thread>();
 		List<EpochRecorder> ers = new LinkedList<EpochRecorder>();
 
-		for(int i = 0; i < 50; i++) {
+		for(int i = 0; i < Num.RUN; i++) {
 			UnitIDLM.WIZ0.altLoad();
 
 			EpochRecorder er = new EpochRecorder(Num.WON_RECORD, UnitIDLM.WIZ0.getLearningMacroAction(), new StaticScript(stat));
@@ -94,7 +118,7 @@ public class PerfomMeasure {
 		sum /= srs.size();
 
 		SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-		File file = new File("res/log/macro/macroLog-" + sfd.format(new Date()) + ".txt");
+		File file = new File("res/log/sotuken/macroLog-" + modeName + sfd.format(new Date()) + ".txt");
 		PrintWriter pw = null;
 		try {
 			pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
@@ -119,6 +143,7 @@ public class PerfomMeasure {
 		}
 
 		pw.println("\n--------- all ave -----------");
+		pw.println("run : " + Num.RUN);
 		pw.println("ave turning point : " + ave(tps));
 		pw.println("ave D : " + ave(dists));
 
